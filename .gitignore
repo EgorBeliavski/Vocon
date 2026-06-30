@@ -36,8 +36,8 @@ bld/
 # ML models (download separately, see README)
 # BlingFire tokenizer files are restored automatically via NuGet — no action needed
 # Only these two need manual download:
-Resources/Models/*.onnx
-Resources/Models/ggml-*.bin
+Resources/Raw/*.onnx
+Resources/Raw/ggml-*.bin
 
 # Audio recordings (user data)
 Resources/Recordings/
