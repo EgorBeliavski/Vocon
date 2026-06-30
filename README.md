@@ -1,5 +1,5 @@
 # Vocon
-<<<<<<< HEAD
+
 
 **Vocon** is a Windows desktop application for hands-free voice note-taking and PC control, built with .NET MAUI and fully local speech-to-text inference (Whisper.net). Voice input is automatically organized by semantic category using on-device ML embeddings, and voice commands can control system functions like media playback — no cloud APIs, no subscriptions.
 
@@ -84,4 +84,4 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 TBD
 =======
 Voice-controlled note-taking and PC management app for Windows. Local speech-to-text via Whisper.net, semantic tagging via ONNX embeddings — no cloud, no subscriptions.
->>>>>>> e4c3ffdab5a3cf85ee8140841d41773532cfa9d0
+
