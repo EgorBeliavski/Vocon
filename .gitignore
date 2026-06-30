@@ -1,0 +1,58 @@
+# .NET / Visual Studio
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+build/
+bld/
+
+# MAUI / Mobile build artifacts
+*.apk
+*.aab
+*.ipa
+*.app
+*.dSYM/
+
+# Rider / VS Code
+.idea/
+.vscode/
+*.swp
+
+# NuGet
+*.nupkg
+**/packages/*
+!**/packages/build/
+
+# ML models (download separately, see README)
+# BlingFire tokenizer files are restored automatically via NuGet — no action needed
+# Only these two need manual download:
+Resources/Models/*.onnx
+Resources/Models/ggml-*.bin
+
+# Audio recordings (user data)
+Resources/Recordings/
+*.wav
+*.mp3
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Secrets / local config
+appsettings.local.json
+appsettings.Development.json
+secrets.json
+*.pfx
+*.snk
+
+# Logs
+*.log
