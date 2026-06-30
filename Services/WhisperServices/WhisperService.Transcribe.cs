@@ -6,7 +6,7 @@ namespace Vocon.Services.WhisperService
 {
     public partial class WhisperService
     {
-        public async Task<string> TranscribeModel(string audiofile, string language = "ru")
+        public async Task<string> TranscribeModel(string audiofile, string language = "eng")
         {
             if (!File.Exists(audiofile))
             {
