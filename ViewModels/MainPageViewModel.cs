@@ -81,7 +81,7 @@ namespace Vocon.ViewModels
 
             Notes.Add(new Note
             {
-                Title = $"Заметка {DateTime.Now:dd.MM.yyyy HH:mm}",
+                Title = $"{DateTime.Now:dd.MM.yyyy HH:mm}",
                 Transcription = resultText,
                 Date = DateTime.Now,
                 AudioFilePath = _currentFilePath,

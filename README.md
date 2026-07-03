@@ -18,7 +18,7 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 - Voice recording and local transcription via Whisper.net (fully on-device, no internet required)
 - Automatic semantic tagging using multilingual sentence embeddings — notes are categorized by meaning, not keywords
 - MVVM architecture with full dependency injection — services are cleanly separated and lazily resolved
-- Language selection for transcription is not yet exposed in the UI — English is used by default for now.
+- Vocon supports multilingual voice input. Currently available in 4 languages:Russian,English,French,German 
 
 ### In Progress
 - Voice-controlled media playback (play/pause/skip via simulated OS-level media keys — works with any media player)

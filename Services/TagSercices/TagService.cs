@@ -16,7 +16,8 @@ namespace Vocon.TagSercices
             _embeddingService = embeddingService;
             _tags = new List<string>
         {
-            "music", "work", "health", "travel", "food"
+            "music", "work", "health", "travel", "food","hobby","finance","home","family","shopping","ideas",
+            "goals","learning","social","other"
         };
         }
         public void Initialize()

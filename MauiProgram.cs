@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Plugin.Maui.Audio;
+using Vocon.Pages;
 using Vocon.Services.EmbeddingServices;
+using Vocon.Services.SettingLanguageService;
 using Vocon.Services.WhisperService;
 using Vocon.TagSercices;
 using Vocon.ViewModels;
@@ -17,6 +19,10 @@ namespace Vocon
 
         
             var builder = MauiApp.CreateBuilder();
+            builder.Services.AddTransient<AppShell>();
+            builder.Services.AddTransient<SettingsPage>();
+            builder.Services.AddTransient<SettingsPageViewModel>();
+
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
@@ -31,7 +37,11 @@ namespace Vocon
             builder.Services.AddSingleton<EmbeddingService>();
             builder.Services.AddSingleton<TagService>();
             builder.Logging.AddDebug();
+            builder.Services.AddSingleton<ISettingLanguageService, SettingLanguageService>();
+
+
             var app = builder.Build();
+
             app.Services.GetRequiredService<EmbeddingService>()
                    .InitializeAsync()
                    .GetAwaiter()
