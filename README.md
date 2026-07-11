@@ -19,12 +19,10 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 - Automatic semantic tagging using multilingual sentence embeddings — notes are categorized by meaning, not keywords
 - MVVM architecture with full dependency injection — services are cleanly separated and lazily resolved
 - Vocon supports multilingual voice input. Currently available in 4 languages:Russian,English,French,German 
+- Global hotkey toggle (Alt+Space) to start/stop recording — works system-wide, even when the app isn't focused
 
 ### In Progress
 - Voice-controlled media playback (play/pause/skip via simulated OS-level media keys — works with any media player)
-- Voice command pipeline: hold a global hotkey to record, release to transcribe, then classify the result as a command or a note
-- Automatic semantic tagging using multilingual sentence embeddings (cosine similarity against predefined tag categories)
-- Multilingual support for both transcription and tagging out of the box
 - Two-panel UI: note list + recording controls
 
 ### Planned
@@ -43,13 +41,15 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 | Tokenization | BlingFire (XLM-RoBERTa) — restored automatically via NuGet |
 | System control | `user32.dll` (P/Invoke) for media key simulation |
 | Audio recording | Plugin.Maui.Audio |
+| Global hotkeys | `user32.dll` (P/Invoke) `RegisterHotKey` + `comctl32.dll` window subclassing |
 
 ## Architecture Overview
 
 - `EmbeddingService` — tokenizes text, runs ONNX inference, mean-pools and L2-normalizes output into a sentence embedding
 - `TagService` — pre-computes embeddings for tag categories at startup, assigns the closest tag to each note via cosine similarity
 - `WhisperService` — wraps Whisper.net for local audio transcription
-- Services are registered as singletons via DI and eagerly initialized at app startup
+- `HotKeyService` — registers a system-wide hotkey via `RegisterHotKey`, tracks toggle state, and raises an event when triggered
+- `MessageHotleyService` — intercepts window messages via `SetWindowSubclass` to route `WM_HOTKEY` notifications into `HotKeyService`
 
 ## Getting Started
 
