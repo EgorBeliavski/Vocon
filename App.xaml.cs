@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Maui.Platform;
+using Vocon.Services.HotKeyService;
 
 namespace Vocon
 {
@@ -13,7 +14,16 @@ namespace Vocon
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            return new Window(new AppShell());
+            Window window = new Window(new AppShell());
+            window.Created += (sender, e) => {
+                IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle((MauiWinUIWindow)window.Handler!.PlatformView!);
+                var hotKeyService = IPlatformApplication.Current!.Services.GetRequiredService<HotKeyService>();
+                hotKeyService.Start(hwnd);
+                MessageHotleyService.Attach(hotKeyService, hwnd);
+
+            };
+            
+            return window;
         }
     }
 }

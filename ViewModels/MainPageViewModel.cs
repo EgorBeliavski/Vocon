@@ -6,6 +6,7 @@ using Vocon.Services.EmbeddingServices;
 using Vocon.Services.WhisperService;
 using Vocon.TagSercices;
 using System.Collections.ObjectModel;
+using Vocon.Services.HotKeyService;
 
 namespace Vocon.ViewModels
 {
@@ -15,8 +16,7 @@ namespace Vocon.ViewModels
         private readonly WhisperService _service;
         private IAudioRecorder _recorder;
         private string _currentFilePath;
-
-        private readonly EmbeddingService _embeddingService;
+        private HotKeyService _hotkeyService;
         private readonly TagService _tagService;
         public ObservableCollection<Note> Notes { get; } = new();
 
@@ -27,13 +27,20 @@ namespace Vocon.ViewModels
         private string recordButtonText = "Record";
 
         public MainPageViewModel(IAudioManager audioManager, WhisperService service,
-                          EmbeddingService embeddingService, TagService tagService)
+                          EmbeddingService embeddingService, TagService tagService, HotKeyService hotkeyService)
         {
+            _hotkeyService = hotkeyService;
             _audioManager = audioManager;
             _service = service;
-            _embeddingService = embeddingService;
             _tagService = tagService;
+
+            _hotkeyService.ChangeState += (newstate) =>{
+                MainThread.BeginInvokeOnMainThread(() => ToggleRecording());
+            };
         }
+
+
+        
 
         [RelayCommand]
         private async Task ToggleRecording()

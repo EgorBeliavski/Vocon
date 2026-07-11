@@ -2,6 +2,8 @@
 using Plugin.Maui.Audio;
 using Vocon.Pages;
 using Vocon.Services.EmbeddingServices;
+using Vocon.Services.HotKeyService;
+using Vocon.Services.MicroDeviceService;
 using Vocon.Services.SettingLanguageService;
 using Vocon.Services.WhisperService;
 using Vocon.TagSercices;
@@ -36,9 +38,10 @@ namespace Vocon
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddSingleton<EmbeddingService>();
             builder.Services.AddSingleton<TagService>();
-            builder.Logging.AddDebug();
             builder.Services.AddSingleton<ISettingLanguageService, SettingLanguageService>();
-
+            builder.Services.AddSingleton<MicroDeviceService>();
+            builder.Services.AddSingleton<HotKeyService>();
+            builder.Logging.AddDebug();
 
             var app = builder.Build();
 
