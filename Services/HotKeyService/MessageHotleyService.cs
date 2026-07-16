@@ -3,7 +3,7 @@
 
 namespace Vocon.Services.HotKeyService
 {
-    internal class MessageHotleyService
+    internal class MessageHotkeyService
     {
         public delegate IntPtr CallBackMessage(IntPtr handler,uint MessageCode, IntPtr wParam, IntPtr lParam, IntPtr ID, IntPtr referenceData);
 
@@ -26,7 +26,6 @@ namespace Vocon.Services.HotKeyService
 
             };
             bool subclassResult = SetWindowSubclass(handle,callback,IntPtr.Zero, IntPtr.Zero);
-            int errorCode = Marshal.GetLastWin32Error();
         }
 
 

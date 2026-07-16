@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-using System.Collections.Generic;
-using System;
+﻿
 using Windows.Devices.Enumeration;
 
 namespace Vocon.Services.MicroDeviceService

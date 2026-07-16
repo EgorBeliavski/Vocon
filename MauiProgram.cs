@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Plugin.Maui.Audio;
 using Vocon.Pages;
+using Vocon.Services.CommandService;
 using Vocon.Services.EmbeddingServices;
 using Vocon.Services.HotKeyService;
 using Vocon.Services.MicroDeviceService;
@@ -38,7 +39,9 @@ namespace Vocon
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddSingleton<EmbeddingService>();
             builder.Services.AddSingleton<TagService>();
+            builder.Services.AddSingleton<CommandService>();
             builder.Services.AddSingleton<ISettingLanguageService, SettingLanguageService>();
+            builder.Services.AddSingleton<IMediaControlService, MediaControlService>();
             builder.Services.AddSingleton<MicroDeviceService>();
             builder.Services.AddSingleton<HotKeyService>();
             builder.Logging.AddDebug();
@@ -51,6 +54,9 @@ namespace Vocon
                    .GetResult();
             app.Services.GetRequiredService<TagService>()
                     .Initialize();
+            app.Services.GetRequiredService<CommandService>()
+                    .Initialize();
+
 #if DEBUG
 
 #endif

@@ -19,7 +19,7 @@ namespace Vocon
                 IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle((MauiWinUIWindow)window.Handler!.PlatformView!);
                 var hotKeyService = IPlatformApplication.Current!.Services.GetRequiredService<HotKeyService>();
                 hotKeyService.Start(hwnd);
-                MessageHotleyService.Attach(hotKeyService, hwnd);
+                MessageHotkeyService.Attach(hotKeyService, hwnd);
 
             };
             

@@ -1,12 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Plugin.Maui.Audio;
+using System.Collections.ObjectModel;
 using Vocon.Models;
+using Vocon.Services.CommandService;
 using Vocon.Services.EmbeddingServices;
+using Vocon.Services.HotKeyService;
 using Vocon.Services.WhisperService;
 using Vocon.TagSercices;
-using System.Collections.ObjectModel;
-using Vocon.Services.HotKeyService;
 
 namespace Vocon.ViewModels
 {
@@ -18,6 +19,8 @@ namespace Vocon.ViewModels
         private string _currentFilePath;
         private HotKeyService _hotkeyService;
         private readonly TagService _tagService;
+        private readonly CommandService _commandService;
+        private readonly IMediaControlService _mediaControlService;
         public ObservableCollection<Note> Notes { get; } = new();
 
         [ObservableProperty]
@@ -27,12 +30,15 @@ namespace Vocon.ViewModels
         private string recordButtonText = "Record";
 
         public MainPageViewModel(IAudioManager audioManager, WhisperService service,
-                          EmbeddingService embeddingService, TagService tagService, HotKeyService hotkeyService)
+                          EmbeddingService embeddingService, TagService tagService, HotKeyService hotkeyService,
+                          CommandService commandService,IMediaControlService mediaControlService)
         {
             _hotkeyService = hotkeyService;
             _audioManager = audioManager;
             _service = service;
             _tagService = tagService;
+            _commandService = commandService;
+            _mediaControlService = mediaControlService;
 
             _hotkeyService.ChangeState += (newstate) =>{
                 MainThread.BeginInvokeOnMainThread(() => ToggleRecording());
@@ -85,15 +91,40 @@ namespace Vocon.ViewModels
             }
 
             var resultText = await _service.TranscribeModel(_currentFilePath);
+            var command = _commandService.GetBestTag(resultText);
 
-            Notes.Add(new Note
+            if (command!=null)
             {
-                Title = $"{DateTime.Now:dd.MM.yyyy HH:mm}",
-                Transcription = resultText,
-                Date = DateTime.Now,
-                AudioFilePath = _currentFilePath,
-                Tag = _tagService.GetBestTag(resultText)
-            });
+                switch(command)
+                {
+                    case MediaCommand.NextTrack:
+                        await _mediaControlService.NextTrack(); break;
+
+                    case MediaCommand.PreviousTrack:
+                        await _mediaControlService.PreviousTrack(); break;
+
+                    case MediaCommand.Play:
+                        await _mediaControlService.SetPlayState(true);break;
+
+                    case MediaCommand.Pause:
+                        await _mediaControlService.SetPlayState(false); break;
+                }
+                     
+            }
+            else{
+                Notes.Add(new Note
+                {
+                    Title = $"{DateTime.Now:dd.MM.yyyy HH:mm}",
+                    Transcription = resultText,
+                    Date = DateTime.Now,
+                    AudioFilePath = _currentFilePath,
+                    Tag = _tagService.GetBestTag(resultText)
+                });
+            }
+
+
+
+           
         }
 
         

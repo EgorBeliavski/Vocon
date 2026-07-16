@@ -49,7 +49,7 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 - `TagService` — pre-computes embeddings for tag categories at startup, assigns the closest tag to each note via cosine similarity
 - `WhisperService` — wraps Whisper.net for local audio transcription
 - `HotKeyService` — registers a system-wide hotkey via `RegisterHotKey`, tracks toggle state, and raises an event when triggered
-- `MessageHotleyService` — intercepts window messages via `SetWindowSubclass` to route `WM_HOTKEY` notifications into `HotKeyService`
+- `MessageHotkeyService` — intercepts window messages via `SetWindowSubclass` to route `WM_HOTKEY` notifications into `HotKeyService`
 
 ## Getting Started
 
