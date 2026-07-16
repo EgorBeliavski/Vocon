@@ -20,6 +20,7 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 - MVVM architecture with full dependency injection — services are cleanly separated and lazily resolved
 - Vocon supports multilingual voice input. Currently available in 4 languages:Russian,English,French,German 
 - Global hotkey toggle (Alt+Space) to start/stop recording — works system-wide, even when the app isn't focused
+- **System-level media control** — reliable Play/Pause, Next Track, and Previous Track simulation via `SendInput` (with cross-architecture x86/x64 memory alignment).
 
 ### In Progress
 - Voice-controlled media playback (play/pause/skip via simulated OS-level media keys — works with any media player)
@@ -42,6 +43,8 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 | System control | `user32.dll` (P/Invoke) for media key simulation |
 | Audio recording | Plugin.Maui.Audio |
 | Global hotkeys | `user32.dll` (P/Invoke) `RegisterHotKey` + `comctl32.dll` window subclassing |
+| **System control** | Robust `user32.dll` P/Invoke (`SendInput`, `RegisterHotKey`) with strict x86/x64 memory alignment |
+| **OS Media Integration** | Windows `GlobalSystemMediaTransportControlsSessionManager` API |
 
 ## Architecture Overview
 
@@ -50,6 +53,7 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 - `WhisperService` — wraps Whisper.net for local audio transcription
 - `HotKeyService` — registers a system-wide hotkey via `RegisterHotKey`, tracks toggle state, and raises an event when triggered
 - `MessageHotkeyService` — intercepts window messages via `SetWindowSubclass` to route `WM_HOTKEY` notifications into `HotKeyService`
+- **`MediaControlService`** — handles OS-level media key simulation (Play/Pause, Next/Prev) via pr
 
 ## Getting Started
 
