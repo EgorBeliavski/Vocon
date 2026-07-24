@@ -9,7 +9,8 @@ namespace Vocon.Services.CommandService
         NextTrack, 
         PreviousTrack, 
         Play,
-        Pause
+        Pause,
+        Repeat
     }
     public class CommandService
     {
@@ -20,6 +21,7 @@ namespace Vocon.Services.CommandService
             ("next track", MediaCommand.NextTrack),
             ("next song", MediaCommand.NextTrack),
             ("skip", MediaCommand.NextTrack),
+            ("lets go", MediaCommand.NextTrack),
            
 
             // PreviousTrack
@@ -36,7 +38,13 @@ namespace Vocon.Services.CommandService
             // Pause
             ("pause", MediaCommand.Pause),
             ("stop", MediaCommand.Pause),
-            
+
+            //Repeat
+            ("repeat", MediaCommand.Repeat),
+            ("repeat song", MediaCommand.Repeat),
+            ("repeat track", MediaCommand.Repeat),
+            ("loop", MediaCommand.Repeat)
+
         };
         private List<float[]> _tagEmbeddings = new();
 

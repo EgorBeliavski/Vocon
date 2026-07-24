@@ -69,6 +69,7 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
 		<PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.27.0" />
 		<PackageReference Include="Plugin.Maui.Audio" Version="4.0.0" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.11.285" />
 		<PackageReference Include="Whisper.net" Version="1.9.1" />
 		<PackageReference Include="Whisper.net.Runtime" Version="1.9.1" />
 	</ItemGroup>

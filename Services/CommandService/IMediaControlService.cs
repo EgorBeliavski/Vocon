@@ -1,13 +1,15 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Windows.Devices.Enumeration;
+using Windows.Media;
 using Windows.Media.Control;
-using System;
 
 
 
 namespace Vocon.Services.CommandService
 {
+    
 
     
 
@@ -36,6 +38,7 @@ namespace Vocon.Services.CommandService
     {
         Task NextTrack();
         Task PreviousTrack();
+        Task Repeat();
         Task SetPlayState(bool wantedstate);
     }
     public class MediaControlService : IMediaControlService
@@ -48,6 +51,7 @@ namespace Vocon.Services.CommandService
         private const int VK_MEDIA_PLAY_PAUSE = 0xB3;
         private const int VK_MEDIA_NEXT_TRACK = 0xB0;
         private const int VK_MEDIA_PREV_TRACK = 0xB1;
+
 
         private async Task SendInputKey(ushort key_code){
             InputStruct[] unionStructs = new InputStruct[2];
@@ -76,19 +80,37 @@ namespace Vocon.Services.CommandService
         private static async Task<bool> GetStatus()
         {
             var sessions = await GlobalSystemMediaTransportControlsSessionManager.RequestAsync();
-            
             var curent = sessions.GetCurrentSession();
-            if(curent is null){
-                return false;
-            }
+            if(curent is null){return false;}
             var sessionStatus = curent.GetPlaybackInfo();
-           
-
             return sessionStatus.PlaybackStatus== GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing; ;
         }
 
         public async Task NextTrack(){await SendInputKey(VK_MEDIA_NEXT_TRACK);}
         public async Task PreviousTrack() { await SendInputKey(VK_MEDIA_PREV_TRACK); }
+        public async Task Repeat() {
+            
+            var sessions = await GlobalSystemMediaTransportControlsSessionManager.RequestAsync();
+
+            var curent = sessions.GetCurrentSession();
+            if (curent is null)
+            {
+                return;
+            }
+
+            var isSupported = curent.GetPlaybackInfo().Controls.IsRepeatEnabled;
+            if (!isSupported)
+            {
+                Debug.WriteLine("No accept");
+                return;
+            }
+            bool result = await curent.TryChangeAutoRepeatModeAsync(MediaPlaybackAutoRepeatMode.Track);
+            Debug.WriteLine($"TryChangeAutoRepeatModeAsync result: {result}");
+            
+            
+            var newInfo = curent.GetPlaybackInfo();
+            Debug.WriteLine($"AutoRepeatMode after change: {newInfo.AutoRepeatMode}");
+        }
 
 
         public async Task SetPlayState(bool wantedstate){

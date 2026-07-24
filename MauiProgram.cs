@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Hosting;
 using Plugin.Maui.Audio;
 using Vocon.Pages;
+using Vocon.Services;
 using Vocon.Services.CommandService;
 using Vocon.Services.EmbeddingServices;
 using Vocon.Services.HotKeyService;
@@ -12,15 +14,10 @@ using Vocon.ViewModels;
 
 namespace Vocon
 {
-    public static class MauiProgram
+    public  static class MauiProgram
     {
-        public  static MauiApp CreateMauiApp()
+        public static MauiApp CreateMauiApp()
         {
-           
-
-           
-
-        
             var builder = MauiApp.CreateBuilder();
             builder.Services.AddTransient<AppShell>();
             builder.Services.AddTransient<SettingsPage>();
@@ -44,10 +41,14 @@ namespace Vocon
             builder.Services.AddSingleton<IMediaControlService, MediaControlService>();
             builder.Services.AddSingleton<MicroDeviceService>();
             builder.Services.AddSingleton<HotKeyService>();
+            builder.Services.AddSingleton<INoteRepository, NoteRepository>();
             builder.Logging.AddDebug();
 
             var app = builder.Build();
-
+            Task.Run(async () =>
+            {
+                await app.Services.GetRequiredService<INoteRepository>().InitializeAsync();
+            }).GetAwaiter().GetResult();
             app.Services.GetRequiredService<EmbeddingService>()
                    .InitializeAsync()
                    .GetAwaiter()

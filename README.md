@@ -24,7 +24,6 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 
 ### In Progress
 - Voice-controlled media playback (play/pause/skip via simulated OS-level media keys — works with any media player)
-- Two-panel UI: note list + recording controls
 
 ### Planned
 - Wake word detection (always-on listening via Porcupine) as an alternative to the hotkey
@@ -45,6 +44,7 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 | Global hotkeys | `user32.dll` (P/Invoke) `RegisterHotKey` + `comctl32.dll` window subclassing |
 | **System control** | Robust `user32.dll` P/Invoke (`SendInput`, `RegisterHotKey`) with strict x86/x64 memory alignment |
 | **OS Media Integration** | Windows `GlobalSystemMediaTransportControlsSessionManager` API |
+| Local storage | SQLite via sqlite-net-pcl |
 
 ## Architecture Overview
 

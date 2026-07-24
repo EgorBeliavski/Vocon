@@ -10,18 +10,44 @@
                     ItemsSource="{Binding Notes}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Border Padding="10" Margin="0,0,0,8" StrokeShape="RoundRectangle 8">
-                        <VerticalStackLayout>
-                            <Label Text="{Binding Title}" FontAttributes="Bold"/>
+                        <Border Padding="10" Margin="0,0,0,8" StrokeShape="RoundRectangle 8">
+                            <VerticalStackLayout>
+                            <Label Text="{Binding Title}" FontAttributes="Bold" IsVisible="{Binding IsNotEditing}"/>
+                            <Entry Text="{Binding Transcription, Mode=TwoWay}" FontAttributes="Bold" IsVisible="{Binding IsEditing}"/>
+
                             <Label Text="{Binding Transcription}" 
-                               LineBreakMode="TailTruncation" 
-                               MaxLines="2"/>
+                                LineBreakMode="TailTruncation" 
+                                MaxLines="2"/>
                             <Label Text="{Binding Date, StringFormat='{0:dd.MM.yyyy HH:mm}'}" 
-                               FontSize="18" 
-                               TextColor="Gray"/>
+                                FontSize="18" 
+                                TextColor="Gray"/>   
                             <Label Text="{Binding Tag}" FontSize="18" TextColor="Gray"/>
-                        </VerticalStackLayout>
-                    </Border>
+
+                            <HorizontalStackLayout HorizontalOptions="End" Spacing="4">
+                                <Button
+                                    Text="🖍️" 
+                                    TextColor="Red"
+                                    FontSize="18"   
+                                    BackgroundColor="Transparent"
+                                    Padding="8,0"
+                                    WidthRequest="30"
+                                    HeightRequest="30"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type CollectionView}}, Path=BindingContext.EditNoteCommand}"
+                                    CommandParameter="{Binding .}"/>
+
+                                <Button
+                                    Text="×" 
+                                    TextColor="Red"
+                                    FontSize="18"   
+                                    BackgroundColor="Transparent"
+                                    Padding="8,0"
+                                    WidthRequest="30"
+                                    HeightRequest="30"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type CollectionView}}, Path=BindingContext.DeleteNoteCommand}"
+                                    CommandParameter="{Binding .}"/>    
+                            </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

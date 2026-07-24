@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Plugin.Maui.Audio;
 using System.Collections.ObjectModel;
 using Vocon.Models;
+using Vocon.Services;
 using Vocon.Services.CommandService;
 using Vocon.Services.EmbeddingServices;
 using Vocon.Services.HotKeyService;
@@ -28,10 +29,10 @@ namespace Vocon.ViewModels
 
         [ObservableProperty]
         private string recordButtonText = "Record";
-
+        private readonly INoteRepository _noteRepository;
         public MainPageViewModel(IAudioManager audioManager, WhisperService service,
                           EmbeddingService embeddingService, TagService tagService, HotKeyService hotkeyService,
-                          CommandService commandService,IMediaControlService mediaControlService)
+                          CommandService commandService,IMediaControlService mediaControlService,INoteRepository noteRepository)
         {
             _hotkeyService = hotkeyService;
             _audioManager = audioManager;
@@ -39,10 +40,11 @@ namespace Vocon.ViewModels
             _tagService = tagService;
             _commandService = commandService;
             _mediaControlService = mediaControlService;
-
+            _noteRepository = noteRepository;
             _hotkeyService.ChangeState += (newstate) =>{
                 MainThread.BeginInvokeOnMainThread(() => ToggleRecording());
             };
+
         }
 
 
@@ -108,25 +110,65 @@ namespace Vocon.ViewModels
 
                     case MediaCommand.Pause:
                         await _mediaControlService.SetPlayState(false); break;
+                    case MediaCommand.Repeat:
+                        await _mediaControlService.Repeat(); break;
                 }
                      
             }
-            else{
-                Notes.Add(new Note
+            else{   
+                var note = new Note
                 {
                     Title = $"{DateTime.Now:dd.MM.yyyy HH:mm}",
                     Transcription = resultText,
                     Date = DateTime.Now,
                     AudioFilePath = _currentFilePath,
                     Tag = _tagService.GetBestTag(resultText)
-                });
+                };
+
+                note.Id = await _noteRepository.SaveNoteAsync(note);
+                Notes.Add(note);
             }
 
 
 
            
         }
+        public async Task LoadNotesAsync()
+        {
+            var notes = await _noteRepository.GetAllNotesAsync();
+            Notes.Clear();
+            foreach (var note in notes)
+            {
+                Notes.Add(note);
+            }
+        }
 
-        
+        [RelayCommand]
+        private async Task DeleteNote(Note note)
+        {
+            if (note == null) return;
+
+            await _noteRepository.DeleteNoteAsync(note);
+            Notes.Remove(note);
+        }
+        [RelayCommand]
+        private async Task EditNote(Note note)
+        {
+            if (note == null) return;
+
+            note.IsEditing = !note.IsEditing;
+
+            if (!note.IsEditing)
+            {
+                await _noteRepository.UpdateNoteAsync(note);
+
+                var index = Notes.IndexOf(note);
+                if (index >= 0)
+                {
+                    Notes[index] = note;
+                }
+            }
+        }
+
     }
 }

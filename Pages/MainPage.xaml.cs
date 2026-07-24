@@ -1,6 +1,7 @@
 ﻿
 using CommunityToolkit.Mvvm.ComponentModel;
 using Plugin.Maui.Audio;
+using System.Diagnostics;
 using Vocon.Services.EmbeddingServices;
 using Vocon.ViewModels;
 using Whisper.net;
@@ -17,7 +18,7 @@ namespace Vocon
         {
             InitializeComponent();
             BindingContext = viewModel;
-         
+            Loaded += async (s, e) => await viewModel.LoadNotesAsync();
         }
         
     }
