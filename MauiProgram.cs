@@ -3,6 +3,7 @@ using Microsoft.Maui.Hosting;
 using Plugin.Maui.Audio;
 using Vocon.Pages;
 using Vocon.Services;
+using Vocon.Services.AutoStartService;
 using Vocon.Services.CommandService;
 using Vocon.Services.EmbeddingServices;
 using Vocon.Services.HotKeyService;
@@ -19,8 +20,10 @@ namespace Vocon
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
-            builder.Services.AddTransient<AppShell>();
-            builder.Services.AddTransient<SettingsPage>();
+            builder.Services.AddSingleton<AppShell>();
+            builder.Services.AddSingleton<MainPage>();
+            builder.Services.AddSingleton<SettingsPage>();
+            builder.Services.AddTransient<MainPageViewModel>();
             builder.Services.AddTransient<SettingsPageViewModel>();
 
             builder
@@ -32,8 +35,6 @@ namespace Vocon
                 }); 
             builder.Services.AddSingleton<IAudioManager>(AudioManager.Current);
             builder.Services.AddSingleton<WhisperService>();
-            builder.Services.AddTransient<MainPageViewModel>();
-            builder.Services.AddTransient<MainPage>();
             builder.Services.AddSingleton<EmbeddingService>();
             builder.Services.AddSingleton<TagService>();
             builder.Services.AddSingleton<CommandService>();
@@ -43,7 +44,7 @@ namespace Vocon
             builder.Services.AddSingleton<HotKeyService>();
             builder.Services.AddSingleton<INoteRepository, NoteRepository>();
             builder.Logging.AddDebug();
-
+            builder.Services.AddSingleton<AutoStartService>();
             var app = builder.Build();
             Task.Run(async () =>
             {

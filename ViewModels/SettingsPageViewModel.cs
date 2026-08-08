@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Vocon.Services.AutoStartService;
 using Vocon.Services.HotKeyService;
 using Vocon.Services.MicroDeviceService;
 using Vocon.Services.SettingLanguageService;
@@ -38,13 +39,15 @@ namespace Vocon.ViewModels
         };
         private readonly ISettingLanguageService _settingsService;
         private readonly MicroDeviceService _microservice;
-        public SettingsPageViewModel(ISettingLanguageService settingsService,MicroDeviceService microdeviceservice)
+        private readonly AutoStartService _autostartService;
+        public SettingsPageViewModel(ISettingLanguageService settingsService,MicroDeviceService microdeviceservice,AutoStartService autoStartService)
         {
             _settingsService = settingsService;
             _microservice = microdeviceservice;
             var savedCode = _settingsService.SelectedLanguageCode;
             SelectedNoteLanguage = NoteLanguages.FirstOrDefault(l => l.Code == savedCode)
                                     ?? NoteLanguages.First();
+            _autostartService = autoStartService;
         }
 
         [RelayCommand]
@@ -83,5 +86,17 @@ namespace Vocon.ViewModels
 
         [ObservableProperty]
         private MicroOptions selectedMicrophone;
+
+
+        [ObservableProperty]
+        private bool launchOnStartup;
+
+        partial void OnLaunchOnStartupChanged(bool value)
+        {
+            if (value)
+                AutoStartService.CreateLabel();
+            else
+                AutoStartService.DeleteLabel();
+        }
     }
 }

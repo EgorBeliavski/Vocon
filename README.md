@@ -20,15 +20,20 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 - MVVM architecture with full dependency injection — services are cleanly separated and lazily resolved
 - Vocon supports multilingual voice input. Currently available in 4 languages:Russian,English,French,German 
 - Global hotkey toggle (Alt+Space) to start/stop recording — works system-wide, even when the app isn't focused
-- **System-level media control** — reliable Play/Pause, Next Track, and Previous Track simulation via `SendInput` (with cross-architecture x86/x64 memory alignment).
+- System-level media control — reliable Play/Pause, Next Track, and Previous Track simulation via `SendInput` (with cross-architecture x86/x64 memory alignment).
+- Autostart — implemented via a shortcut in the Windows Startup folder (not the registry), so the mechanism stays visible and removable by the user
 
 ### In Progress
-- Voice-controlled media playback (play/pause/skip via simulated OS-level media keys — works with any media player)
+- Customizable recording hotkey
+- Save confirmation feedback
+- Recording/processing state indicator
+- First-run onboarding
 
 ### Planned
-- Wake word detection (always-on listening via Porcupine) as an alternative to the hotkey
-- Terminal-style slash-command interface
-- Expanded system control beyond media
+- Tray icon / background operation
+- Handle missing/disabled microphone
+- Distributable packaging
+- Model download / setup script
 
 ## Tech Stack
 
@@ -53,20 +58,24 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 - `WhisperService` — wraps Whisper.net for local audio transcription
 - `HotKeyService` — registers a system-wide hotkey via `RegisterHotKey`, tracks toggle state, and raises an event when triggered
 - `MessageHotkeyService` — intercepts window messages via `SetWindowSubclass` to route `WM_HOTKEY` notifications into `HotKeyService`
-- **`MediaControlService`** — handles OS-level media key simulation (Play/Pause, Next/Prev) via pr
+- `MediaControlService` — handles OS-level media key simulation (Play/Pause, Next/Prev) via `SendInput`
+- `CommandService` — classifies transcribed voice commands via cosine similarity against known command phrases
+- `NoteRepository` — SQLite-backed persistence layer for notes, with inline editing support
+- `AutoStartService` — manages Windows autostart via a shortcut in the Startup folder (not registry, for user transparency)
+- `MicroDeviceService` — enumerates and manages available microphone input devices
 
 ## Getting Started
 
 ### Prerequisites
 - Windows 10/11
-- .NET 8 SDK
+- .NET 10 SDK
 - Visual Studio 2022 with the .NET MAUI workload
 
 ### Setup
 
 1. Clone the repo:
    ```bash
-   git clone https://github.com/<your-username>/Vocon.git
+   git clone https://github.com/EgorBeliavski/Vocon.git
    ```
 
 2. Restore NuGet packages (BlingFire tokenizer files are included automatically):

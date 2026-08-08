@@ -87,7 +87,7 @@ namespace Vocon.Services.CommandService
         }
 
         public async Task NextTrack(){await SendInputKey(VK_MEDIA_NEXT_TRACK);}
-        public async Task PreviousTrack() { await SendInputKey(VK_MEDIA_PREV_TRACK); }
+        public async Task PreviousTrack() { await SendInputKey(VK_MEDIA_PREV_TRACK);await SendInputKey(VK_MEDIA_PREV_TRACK); }
         public async Task Repeat() {
             
             var sessions = await GlobalSystemMediaTransportControlsSessionManager.RequestAsync();

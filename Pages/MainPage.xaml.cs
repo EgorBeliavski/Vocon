@@ -20,6 +20,7 @@ namespace Vocon
             BindingContext = viewModel;
             Loaded += async (s, e) => await viewModel.LoadNotesAsync();
         }
-        
+
+       
     }
 }

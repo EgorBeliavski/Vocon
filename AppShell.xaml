@@ -8,10 +8,10 @@
     Title="Vocon">
 
     <FlyoutItem Title="Tags">
-        <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
+        <ShellContent x:Name="MainShellContent" />
     </FlyoutItem>
 
     <FlyoutItem Title="Settings">
-        <ShellContent ContentTemplate="{DataTemplate pages:SettingsPage}" />
+        <ShellContent x:Name="SettingsShellContent" />
     </FlyoutItem>
 </Shell>
