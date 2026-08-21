@@ -7,6 +7,7 @@ using Vocon.Services;
 using Vocon.Services.CommandService;
 using Vocon.Services.EmbeddingServices;
 using Vocon.Services.HotKeyService;
+using Vocon.Services.MicroDeviceService;
 using Vocon.Services.WhisperService;
 using Vocon.TagSercices;
 
@@ -18,10 +19,11 @@ namespace Vocon.ViewModels
         private readonly WhisperService _service;
         private IAudioRecorder _recorder;
         private string _currentFilePath;
-        private HotKeyService _hotkeyService;
+        private IHotKeyService _hotkeyService;
         private readonly TagService _tagService;
         private readonly CommandService _commandService;
         private readonly IMediaControlService _mediaControlService;
+        private readonly IMicrophoneSettingsService _microphoneSettingsService;
         public ObservableCollection<Note> Notes { get; } = new();
 
         [ObservableProperty]
@@ -30,9 +32,11 @@ namespace Vocon.ViewModels
         [ObservableProperty]
         private string recordButtonText = "Record";
         private readonly INoteRepository _noteRepository;
+
         public MainPageViewModel(IAudioManager audioManager, WhisperService service,
-                          EmbeddingService embeddingService, TagService tagService, HotKeyService hotkeyService,
-                          CommandService commandService,IMediaControlService mediaControlService,INoteRepository noteRepository)
+                          EmbeddingService embeddingService, TagService tagService, IHotKeyService hotkeyService,
+                          CommandService commandService, IMediaControlService mediaControlService,
+                          INoteRepository noteRepository, IMicrophoneSettingsService microphoneSettingsService)
         {
             _hotkeyService = hotkeyService;
             _audioManager = audioManager;
@@ -41,14 +45,17 @@ namespace Vocon.ViewModels
             _commandService = commandService;
             _mediaControlService = mediaControlService;
             _noteRepository = noteRepository;
-            _hotkeyService.ChangeState += (newstate) =>{
-                MainThread.BeginInvokeOnMainThread(() => ToggleRecording());
+            _microphoneSettingsService = microphoneSettingsService;
+            _hotkeyService.ChangeState += (newstate) =>
+            {
+                // Важно: не вызывать тяжёлую логику (запись через MediaCapture) синхронно внутри
+                // стека WH_KEYBOARD_LL хука — это ломает WinRT/COM-инициализацию с generic COMException.
+                // Task.Run гарантированно разрывает стек и уходит с потока хука,
+                // а MainThread.BeginInvokeOnMainThread уже оттуда безопасно возвращается в UI-поток
+                // отдельным, по-настоящему асинхронным сообщением, а не инлайн-вызовом.
+                Task.Run(() => MainThread.BeginInvokeOnMainThread(() => _ = ToggleRecording()));
             };
-
         }
-
-
-        
 
         [RelayCommand]
         private async Task ToggleRecording()
@@ -63,6 +70,8 @@ namespace Vocon.ViewModels
         {
             _recorder = _audioManager.CreateRecorder();
 
+            // Читаем ID микрофона, который пользователь выбрал в Settings.
+            // Если ничего не выбрано/не сохранено (null) — MediaCapture возьмёт устройство по умолчанию.
             await _recorder.StartAsync(new AudioRecorderOptions
             {
                 SampleRate = 16000,
@@ -95,9 +104,9 @@ namespace Vocon.ViewModels
             var resultText = await _service.TranscribeModel(_currentFilePath);
             var command = _commandService.GetBestTag(resultText);
 
-            if (command!=null)
+            if (command != null)
             {
-                switch(command)
+                switch (command)
                 {
                     case MediaCommand.NextTrack:
                         await _mediaControlService.NextTrack(); break;
@@ -106,16 +115,16 @@ namespace Vocon.ViewModels
                         await _mediaControlService.PreviousTrack(); break;
 
                     case MediaCommand.Play:
-                        await _mediaControlService.SetPlayState(true);break;
+                        await _mediaControlService.SetPlayState(true); break;
 
                     case MediaCommand.Pause:
                         await _mediaControlService.SetPlayState(false); break;
                     case MediaCommand.Repeat:
                         await _mediaControlService.Repeat(); break;
                 }
-                     
             }
-            else{   
+            else
+            {
                 var note = new Note
                 {
                     Title = $"{DateTime.Now:dd.MM.yyyy HH:mm}",
@@ -128,11 +137,8 @@ namespace Vocon.ViewModels
                 note.Id = await _noteRepository.SaveNoteAsync(note);
                 Notes.Add(note);
             }
-
-
-
-           
         }
+
         public async Task LoadNotesAsync()
         {
             var notes = await _noteRepository.GetAllNotesAsync();
@@ -151,6 +157,7 @@ namespace Vocon.ViewModels
             await _noteRepository.DeleteNoteAsync(note);
             Notes.Remove(note);
         }
+
         [RelayCommand]
         private async Task EditNote(Note note)
         {
@@ -169,6 +176,5 @@ namespace Vocon.ViewModels
                 }
             }
         }
-
     }
-}
+} 

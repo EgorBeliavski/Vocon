@@ -18,12 +18,24 @@ namespace Vocon
             Window window = new Window(_shell);
             window.Created += (sender, e) =>
             {
-                IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle((MauiWinUIWindow)window.Handler!.PlatformView!);
-                var hotKeyService = IPlatformApplication.Current!.Services.GetRequiredService<HotKeyService>();
-                hotKeyService.Start(hwnd);
-                MessageHotkeyService.Attach(hotKeyService, hwnd);
-            };
+                try
+                {
+                    IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle((MauiWinUIWindow)window.Handler!.PlatformView!);
 
+                    var services = IPlatformApplication.Current!.Services;
+                    var hotKeyService = services.GetRequiredService<IHotKeyService>();
+                    var hotKeySettingsService = services.GetRequiredService<IHotKeySettingsService>();
+
+                   
+                    var savedKeys = hotKeySettingsService.Load();
+
+                    hotKeyService.Start(hwnd, savedKeys);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[App] EXCEPTION in window.Created: {ex}");
+                }
+            };
             return window;
         }
     }

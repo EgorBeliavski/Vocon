@@ -8,7 +8,7 @@
               RowSpacing="16"
               ColumnSpacing="12"
               ColumnDefinitions="140,*"
-              RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
 
             <!-- Язык заметок -->
             <Label Grid.Row="0" Grid.Column="0"
@@ -18,7 +18,7 @@
                     ItemsSource="{Binding NoteLanguages}"
                     SelectedItem="{Binding SelectedNoteLanguage}"
                     ItemDisplayBinding="{Binding DisplayName}"
-                    Title="Pick language" />    
+                    Title="Pick language" />
 
             <!-- Микрофон -->
             <Label Grid.Row="1" Grid.Column="0"
@@ -57,18 +57,24 @@
                         Command="{Binding StartHotkeyCaptureCommand}" />
             </Grid>
 
-            <!-- Предупреждение о конфликте hotkey -->
+            <!-- Постоянная подсказка про ограничения комбинаций -->
             <Label Grid.Row="3" Grid.Column="1"
+                   Text="{Binding HotkeyHint}"
+                   TextColor="Gray"
+                   FontSize="12" />
+
+            <!-- Предупреждение о конфликте hotkey -->
+            <Label Grid.Row="4" Grid.Column="1"
                    Text="{Binding HotkeyConflictWarning}"
                    TextColor="Red"
                    FontSize="12"
                    IsVisible="{Binding HasHotkeyConflict}" />
 
             <!-- Автозапуск -->
-            <Label Grid.Row="4" Grid.Column="0"
+            <Label Grid.Row="5" Grid.Column="0"
                    Text="Auto-launch Windows"
                    VerticalOptions="Center" />
-            <Switch Grid.Row="4" Grid.Column="1"
+            <Switch Grid.Row="5" Grid.Column="1"
                     IsToggled="{Binding LaunchOnStartup}"
                     HorizontalOptions="Start" />
 

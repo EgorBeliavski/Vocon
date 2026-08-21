@@ -38,11 +38,17 @@ namespace Vocon
             builder.Services.AddSingleton<EmbeddingService>();
             builder.Services.AddSingleton<TagService>();
             builder.Services.AddSingleton<CommandService>();
+
             builder.Services.AddSingleton<ISettingLanguageService, SettingLanguageService>();
             builder.Services.AddSingleton<IMediaControlService, MediaControlService>();
-            builder.Services.AddSingleton<MicroDeviceService>();
-            builder.Services.AddSingleton<HotKeyService>();
+            builder.Services.AddSingleton<IHotKeySettingsService, HotKeySettingsService>();
+            builder.Services.AddSingleton<IHotKeyService, HotKeyService>();
+            builder.Services.AddSingleton<IHotKeyRecorderService, HotKeyRecorderService>();
             builder.Services.AddSingleton<INoteRepository, NoteRepository>();
+            builder.Services.AddSingleton<IMicrophoneSettingsService, MicrophoneSettingsService>();
+
+
+            builder.Services.AddSingleton<MicroDeviceService>();
             builder.Logging.AddDebug();
             builder.Services.AddSingleton<AutoStartService>();
             var app = builder.Build();

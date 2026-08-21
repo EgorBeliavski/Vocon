@@ -19,9 +19,8 @@ namespace Vocon.Services.HotKeyService
 
 
 
-        public static void Attach(HotKeyService service,IntPtr handle){
+        public static void Attach(IHotKeyService service,IntPtr handle){
             callback = (IntPtr handler, uint MessageCode, IntPtr wParam, IntPtr lParam, IntPtr ID, IntPtr referenceData) => {
-                service.HandleMessage(wParam.ToInt32(), (int)MessageCode);
                 return DefSubclassProc(handler,MessageCode,wParam,lParam);
 
             };
