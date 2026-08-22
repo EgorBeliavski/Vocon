@@ -22,9 +22,9 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 - Global hotkey toggle (Alt+Space) to start/stop recording — works system-wide, even when the app isn't focused
 - System-level media control — reliable Play/Pause, Next Track, and Previous Track simulation via `SendInput` (with cross-architecture x86/x64 memory alignment).
 - Autostart — implemented via a shortcut in the Windows Startup folder (not the registry), so the mechanism stays visible and removable by the user
+- Hotkey - finally complete.Finally you can change recorder hotkey.
 
 ### In Progress
-- Customizable recording hotkey
 - Save confirmation feedback
 - Recording/processing state indicator
 - First-run onboarding
