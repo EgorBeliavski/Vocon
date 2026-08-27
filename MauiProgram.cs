@@ -4,6 +4,7 @@ using Plugin.Maui.Audio;
 using Vocon.Pages;
 using Vocon.Services;
 using Vocon.Services.AutoStartService;
+using Vocon.Services.BrowserNavigationService;
 using Vocon.Services.CommandService;
 using Vocon.Services.EmbeddingServices;
 using Vocon.Services.HotKeyService;
@@ -46,7 +47,7 @@ namespace Vocon
             builder.Services.AddSingleton<IHotKeyRecorderService, HotKeyRecorderService>();
             builder.Services.AddSingleton<INoteRepository, NoteRepository>();
             builder.Services.AddSingleton<IMicrophoneSettingsService, MicrophoneSettingsService>();
-
+            builder.Services.AddSingleton<IBrowserNavigationService, BrowserNavigationService>();
 
             builder.Services.AddSingleton<MicroDeviceService>();
             builder.Logging.AddDebug();

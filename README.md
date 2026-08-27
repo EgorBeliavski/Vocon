@@ -1,7 +1,6 @@
 # Vocon
 
-
-**Vocon** is a Windows desktop application for hands-free voice note-taking and PC control, built with .NET MAUI and fully local speech-to-text inference (Whisper.net). Voice input is automatically organized by semantic category using on-device ML embeddings, and voice commands can control system functions like media playback — no cloud APIs, no subscriptions.
+**Vocon** is a Windows desktop application for hands-free voice note-taking and PC control, built with .NET MAUI and fully local speech-to-text inference (Whisper.net). Voice input is automatically organized by semantic category using on-device ML embeddings, and voice commands can control system functions like media playback and browser navigation — no cloud APIs, no subscriptions.
 
 > This project is under active development. Expect breaking changes and incomplete features.
 
@@ -18,11 +17,12 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 - Voice recording and local transcription via Whisper.net (fully on-device, no internet required)
 - Automatic semantic tagging using multilingual sentence embeddings — notes are categorized by meaning, not keywords
 - MVVM architecture with full dependency injection — services are cleanly separated and lazily resolved
-- Vocon supports multilingual voice input. Currently available in 4 languages:Russian,English,French,German 
+- Vocon supports multilingual voice input. Currently available in 4 languages: Russian, English, French, German
 - Global hotkey toggle (Alt+Space) to start/stop recording — works system-wide, even when the app isn't focused
-- System-level media control — reliable Play/Pause, Next Track, and Previous Track simulation via `SendInput` (with cross-architecture x86/x64 memory alignment).
+- System-level media control — reliable Play/Pause, Next Track, and Previous Track simulation via `SendInput` (with cross-architecture x86/x64 memory alignment)
+- Voice-triggered browser navigation — say a trigger phrase ("open YouTube", "открой почту") to jump straight to a known site, with fallback to a web search when the site isn't in the list
 - Autostart — implemented via a shortcut in the Windows Startup folder (not the registry), so the mechanism stays visible and removable by the user
-- Hotkey - finally complete.Finally you can change recorder hotkey.
+- Hotkey - finally complete. Finally you can change recorder hotkey.
 
 ### In Progress
 - Save confirmation feedback
@@ -34,6 +34,7 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 - Handle missing/disabled microphone
 - Distributable packaging
 - Model download / setup script
+- Wake word detection ("Vocon")
 
 ## Tech Stack
 
@@ -60,6 +61,7 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 - `MessageHotkeyService` — intercepts window messages via `SetWindowSubclass` to route `WM_HOTKEY` notifications into `HotKeyService`
 - `MediaControlService` — handles OS-level media key simulation (Play/Pause, Next/Prev) via `SendInput`
 - `CommandService` — classifies transcribed voice commands via cosine similarity against known command phrases
+- `BrowserNavigationService` — detects trigger words per language, resolves a spoken site name against a known-sites dictionary (with synonyms), and opens it via the system's default browser, falling back to a web search when there's no match
 - `NoteRepository` — SQLite-backed persistence layer for notes, with inline editing support
 - `AutoStartService` — manages Windows autostart via a shortcut in the Startup folder (not registry, for user transparency)
 - `MicroDeviceService` — enumerates and manages available microphone input devices
@@ -74,14 +76,14 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 ### Setup
 
 1. Clone the repo:
-   ```bash
+```bash
    git clone https://github.com/EgorBeliavski/Vocon.git
-   ```
+```
 
 2. Restore NuGet packages (BlingFire tokenizer files are included automatically):
-   ```bash
+```bash
    dotnet restore
-   ```
+```
 
 3. **Download the models manually** (not included in the repo due to file size):
 
@@ -95,6 +97,3 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 ## License
 
 TBD
-=======
-Voice-controlled note-taking and PC management app for Windows. Local speech-to-text via Whisper.net, semantic tagging via ONNX embeddings — no cloud, no subscriptions.
-

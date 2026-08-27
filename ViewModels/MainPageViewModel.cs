@@ -9,6 +9,7 @@ using Vocon.Services.EmbeddingServices;
 using Vocon.Services.HotKeyService;
 using Vocon.Services.MicroDeviceService;
 using Vocon.Services.WhisperService;
+using Vocon.Services.BrowserNavigationService;
 using Vocon.TagSercices;
 
 namespace Vocon.ViewModels
@@ -23,6 +24,7 @@ namespace Vocon.ViewModels
         private readonly TagService _tagService;
         private readonly CommandService _commandService;
         private readonly IMediaControlService _mediaControlService;
+        private readonly IBrowserNavigationService _browserNavigationService; 
         private readonly IMicrophoneSettingsService _microphoneSettingsService;
         public ObservableCollection<Note> Notes { get; } = new();
 
@@ -36,6 +38,7 @@ namespace Vocon.ViewModels
         public MainPageViewModel(IAudioManager audioManager, WhisperService service,
                           EmbeddingService embeddingService, TagService tagService, IHotKeyService hotkeyService,
                           CommandService commandService, IMediaControlService mediaControlService,
+                          IBrowserNavigationService browserNavigationService, 
                           INoteRepository noteRepository, IMicrophoneSettingsService microphoneSettingsService)
         {
             _hotkeyService = hotkeyService;
@@ -44,15 +47,11 @@ namespace Vocon.ViewModels
             _tagService = tagService;
             _commandService = commandService;
             _mediaControlService = mediaControlService;
+            _browserNavigationService = browserNavigationService; 
             _noteRepository = noteRepository;
             _microphoneSettingsService = microphoneSettingsService;
             _hotkeyService.ChangeState += (newstate) =>
             {
-                // Важно: не вызывать тяжёлую логику (запись через MediaCapture) синхронно внутри
-                // стека WH_KEYBOARD_LL хука — это ломает WinRT/COM-инициализацию с generic COMException.
-                // Task.Run гарантированно разрывает стек и уходит с потока хука,
-                // а MainThread.BeginInvokeOnMainThread уже оттуда безопасно возвращается в UI-поток
-                // отдельным, по-настоящему асинхронным сообщением, а не инлайн-вызовом.
                 Task.Run(() => MainThread.BeginInvokeOnMainThread(() => _ = ToggleRecording()));
             };
         }
@@ -70,8 +69,6 @@ namespace Vocon.ViewModels
         {
             _recorder = _audioManager.CreateRecorder();
 
-            // Читаем ID микрофона, который пользователь выбрал в Settings.
-            // Если ничего не выбрано/не сохранено (null) — MediaCapture возьмёт устройство по умолчанию.
             await _recorder.StartAsync(new AudioRecorderOptions
             {
                 SampleRate = 16000,
@@ -102,6 +99,12 @@ namespace Vocon.ViewModels
             }
 
             var resultText = await _service.TranscribeModel(_currentFilePath);
+
+            
+            var opened = await _browserNavigationService.TryNavigateAsync(resultText);
+            if (opened)
+                return;
+
             var command = _commandService.GetBestTag(resultText);
 
             if (command != null)
@@ -177,4 +180,4 @@ namespace Vocon.ViewModels
             }
         }
     }
-} 
+}
