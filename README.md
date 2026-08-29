@@ -23,6 +23,8 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 - Voice-triggered browser navigation — say a trigger phrase ("open YouTube", "открой почту") to jump straight to a known site, with fallback to a web search when the site isn't in the list
 - Autostart — implemented via a shortcut in the Windows Startup folder (not the registry), so the mechanism stays visible and removable by the user
 - Hotkey - finally complete. Finally you can change recorder hotkey.
+- Custom borderless window with a hand-built title bar (minimize/maximize/close) — no native Windows chrome, fully themed to match the app
+- Retro CRT-style visual overlay (film grain + scanlines) via a reusable `GraphicsView`-based control, layered on top of every page
 
 ### In Progress
 - Save confirmation feedback
@@ -51,6 +53,7 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 | **System control** | Robust `user32.dll` P/Invoke (`SendInput`, `RegisterHotKey`) with strict x86/x64 memory alignment |
 | **OS Media Integration** | Windows `GlobalSystemMediaTransportControlsSessionManager` API |
 | Local storage | SQLite via sqlite-net-pcl |
+| Window chrome | WinAppSDK (`AppWindow`, `OverlappedPresenter`) + `user32.dll` P/Invoke for custom drag/resize |
 
 ## Architecture Overview
 
@@ -65,6 +68,8 @@ Most voice assistants require cloud connectivity, subscriptions, or are locked t
 - `NoteRepository` — SQLite-backed persistence layer for notes, with inline editing support
 - `AutoStartService` — manages Windows autostart via a shortcut in the Startup folder (not registry, for user transparency)
 - `MicroDeviceService` — enumerates and manages available microphone input devices
+- `WindowChromeService` — wraps native window drag/minimize/maximize/close for the borderless custom title bar
+- `RetroOverlayView` — a `GraphicsView`-based control that renders film grain and scanlines on top of any page
 
 ## Getting Started
 
