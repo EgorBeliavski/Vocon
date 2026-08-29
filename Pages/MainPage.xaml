@@ -1,63 +1,182 @@
 ﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Vocon.MainPage">
+             xmlns:controls="clr-namespace:Vocon.Controls;assembly=Vocon"
+             x:Class="Vocon.MainPage"
+             Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="*,Auto" ColumnDefinitions="*,*" Padding="20">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="BgTop">#0D0D10</Color>
+            <Color x:Key="BgBottom">#08080A</Color>
+            <Color x:Key="TextLight">#DEE0E6</Color>
+            <Color x:Key="TextMuted">#646272</Color>
+            <Color x:Key="AccentTeal">#2FB8A0</Color>
+            <Color x:Key="AccentRed">#FF3355</Color>
+            <Color x:Key="NoteBg">#000000</Color>
 
-        <CollectionView Grid.Row="0" 
-                    Grid.Column="0" 
-                    Grid.ColumnSpan="2"
-                    ItemsSource="{Binding Notes}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                        <Border Padding="10" Margin="0,0,0,8" StrokeShape="RoundRectangle 8">
-                            <VerticalStackLayout>
-                            <Label Text="{Binding Title}" FontAttributes="Bold" IsVisible="{Binding IsNotEditing}"/>
-                            <Entry Text="{Binding Transcription, Mode=TwoWay}" FontAttributes="Bold" IsVisible="{Binding IsEditing}"/>
+            <x:String x:Key="AsciiDivider">▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓</x:String>
+            <Style x:Key="AsciiDividerStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="Courier New" />
+                <Setter Property="FontSize" Value="10" />
+                <Setter Property="TextColor" Value="#222329" />
+                <Setter Property="LineBreakMode" Value="NoWrap" />
+                <Setter Property="Margin" Value="0,4,0,4" />
+            </Style>
 
-                            <Label Text="{Binding Transcription}" 
-                                LineBreakMode="TailTruncation" 
-                                MaxLines="2"/>
-                            <Label Text="{Binding Date, StringFormat='{0:dd.MM.yyyy HH:mm}'}" 
-                                FontSize="18" 
-                                TextColor="Gray"/>   
-                            <Label Text="{Binding Tag}" FontSize="18" TextColor="Gray"/>
+            <Style x:Key="IconButtonStyle" TargetType="Button">
+                <Setter Property="FontFamily" Value="Courier New" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="WidthRequest" Value="30" />
+                <Setter Property="HeightRequest" Value="30" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="CornerRadius" Value="15" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-                            <HorizontalStackLayout HorizontalOptions="End" Spacing="4">
-                                <Button
-                                    Text="🖍️" 
-                                    TextColor="Red"
-                                    FontSize="18"   
-                                    BackgroundColor="Transparent"
-                                    Padding="8,0"
-                                    WidthRequest="30"
-                                    HeightRequest="30"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type CollectionView}}, Path=BindingContext.EditNoteCommand}"
-                                    CommandParameter="{Binding .}"/>
+    <Grid>
 
-                                <Button
-                                    Text="×" 
-                                    TextColor="Red"
-                                    FontSize="18"   
-                                    BackgroundColor="Transparent"
-                                    Padding="8,0"
-                                    WidthRequest="30"
-                                    HeightRequest="30"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type CollectionView}}, Path=BindingContext.DeleteNoteCommand}"
-                                    CommandParameter="{Binding .}"/>    
-                            </HorizontalStackLayout>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="{StaticResource BgTop}" Offset="0.0" />
+                <GradientStop Color="{StaticResource BgBottom}" Offset="1.0" />
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+            <!-- TITLE BAR -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" HeightRequest="34">
+
+                <BoxView Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="Transparent">
+                    <BoxView.GestureRecognizers>
+                        <PointerGestureRecognizer PointerPressed="OnDragZonePressed" />
+                    </BoxView.GestureRecognizers>
+                </BoxView>
+
+                <HorizontalStackLayout Grid.Column="1" Spacing="2">
+                    <Button ImageSource="icon_minimize_lostmedia.png"
+                    WidthRequest="34" HeightRequest="34" Padding="9"
+                    BackgroundColor="Transparent"
+                    Clicked="OnMinimizeClicked" />
+                    <Button x:Name="MaximizeButton"
+                    ImageSource="icon_maximize_lostmedia.png"
+                    WidthRequest="34" HeightRequest="34" Padding="9"
+                    BackgroundColor="Transparent"
+                    Clicked="OnMaximizeClicked" />
+                    <Button ImageSource="icon_close_lostmedia.png"
+                    WidthRequest="34" HeightRequest="34" Padding="9"
+                    BackgroundColor="Transparent"
+                    Clicked="OnCloseClicked" />
+                </HorizontalStackLayout>
+            </Grid>
+
+            <!-- HEADER -->
+            <VerticalStackLayout Grid.Row="1" Padding="24,14,24,0">
+
+                <Label Text="no cloud · no telemetry"
+                       HorizontalOptions="End"
+                       FontFamily="Courier New" FontSize="11" TextColor="{StaticResource TextMuted}" />
+
+                <Label Text="{StaticResource AsciiDivider}" Style="{StaticResource AsciiDividerStyle}" />
+
+                <Grid HorizontalOptions="Start" Margin="0,10,0,2">
+                    <Label Text="VOCON" FontFamily="Courier New" FontSize="34" FontAttributes="Bold"
+                           TextColor="{StaticResource AccentTeal}" Opacity="0.3" TranslationX="-1" />
+                    <Label Text="VOCON" FontFamily="Courier New" FontSize="34" FontAttributes="Bold"
+                           TextColor="{StaticResource AccentRed}" Opacity="0.3" TranslationX="1" />
+                    <Label Text="VOCON" FontFamily="Courier New" FontSize="34" FontAttributes="Bold"
+                           TextColor="{StaticResource TextLight}" />
+                </Grid>
+
+                <Label FontFamily="Courier New" FontSize="11" TextColor="{StaticResource TextMuted}">
+                    <Label.Text>speak — vocon will write it down. without the internet, without an account, without leaks.</Label.Text>
+                </Label>
+
+                <Label Text="{StaticResource AsciiDivider}" Style="{StaticResource AsciiDividerStyle}" Margin="0,14,0,0" />
+            </VerticalStackLayout>
+
+            <!-- NOTES -->
+            <CollectionView Grid.Row="2" Margin="20,10,20,0" ItemsSource="{Binding Notes}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="16" Margin="0,0,0,14"
+                                Stroke="{StaticResource AccentRed}" StrokeThickness="2"
+                                BackgroundColor="{StaticResource NoteBg}"
+                                StrokeShape="Rectangle">
+
+                            <VerticalStackLayout Spacing="4">
+
+                                <Label Text="{Binding Title}" FontFamily="Courier New" FontAttributes="Bold"
+                                       FontSize="16" TextColor="{StaticResource TextLight}"
+                                       IsVisible="{Binding IsNotEditing}" />
+
+                                <Entry Text="{Binding Transcription, Mode=TwoWay}" FontFamily="Courier New"
+                                       FontAttributes="Bold" TextColor="{StaticResource TextLight}"
+                                       BackgroundColor="Transparent" IsVisible="{Binding IsEditing}" />
+
+                                <Label Text="{Binding Transcription}" FontFamily="Courier New" FontSize="13"
+                                       TextColor="{StaticResource TextMuted}" LineBreakMode="TailTruncation" MaxLines="2" />
+
+                                <HorizontalStackLayout Spacing="12" Margin="0,6,0,0">
+                                    <Label Text="{Binding Date, StringFormat='{0:dd.MM.yyyy HH:mm}'}"
+                                           FontFamily="Courier New" FontSize="11" TextColor="{StaticResource TextMuted}" />
+                                    <Label Text="{Binding Tag}" FontFamily="Courier New" FontSize="11"
+                                           TextColor="{StaticResource AccentTeal}" />
+                                </HorizontalStackLayout>
+
+                                <HorizontalStackLayout HorizontalOptions="End" Spacing="4" Margin="0,6,0,0">
+                                    <Button Text="✎" Style="{StaticResource IconButtonStyle}"
+                                            TextColor="{StaticResource AccentTeal}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type CollectionView}}, Path=BindingContext.EditNoteCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    <Button Text="✕" Style="{StaticResource IconButtonStyle}"
+                                            TextColor="{StaticResource AccentRed}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type CollectionView}}, Path=BindingContext.DeleteNoteCommand}"
+                                            CommandParameter="{Binding .}" />
+                                </HorizontalStackLayout>
+
                             </VerticalStackLayout>
                         </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
-        <Button Text="{Binding RecordButtonText}" 
-            Command="{Binding ToggleRecordingCommand}"
-            Grid.Row="1" 
-            Grid.Column="0" 
-            Grid.ColumnSpan="2"
-            WidthRequest="100"
-            HorizontalOptions="Center"/>
+            <!-- RECORD DOCK -->
+            <VerticalStackLayout Grid.Row="3" Padding="20,0,20,26" Spacing="16">
+
+                <Label Text="{StaticResource AsciiDivider}" Style="{StaticResource AsciiDividerStyle}" Margin="0" />
+
+                <Grid HorizontalOptions="Center" WidthRequest="86" HeightRequest="86">
+                    <Ellipse Fill="{StaticResource AccentTeal}" Opacity="0.35"
+                             WidthRequest="80" HeightRequest="80" TranslationX="-8" InputTransparent="True" />
+                    <Ellipse Fill="{StaticResource AccentRed}" Opacity="0.35"
+                             WidthRequest="80" HeightRequest="80" TranslationX="8" InputTransparent="True" />
+
+                    <Button Text="{Binding RecordButtonText}"
+                            Command="{Binding ToggleRecordingCommand}"
+                            FontFamily="Courier New" FontSize="12" TextColor="{StaticResource TextLight}"
+                            BackgroundColor="#0A0A0C" BorderColor="#3A3A3E" BorderWidth="1"
+                            CornerRadius="37" WidthRequest="74" HeightRequest="74" Padding="4" />
+                </Grid>
+
+                <Label Text="hold to record · Ctrl+Alt+Space" HorizontalOptions="Center"
+                       FontFamily="Courier New" FontSize="11" TextColor="{StaticResource TextMuted}" />
+            </VerticalStackLayout>
+
+        </Grid>
+
+        <BoxView InputTransparent="True">
+            <BoxView.Background>
+                <RadialGradientBrush Center="0.5,0.35" Radius="0.75">
+                    <GradientStop Color="Transparent" Offset="0.45" />
+                    <GradientStop Color="#60000000" Offset="1.0" />
+                </RadialGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+
+        <controls:RetroOverlayView NoiseOpacity="0.02" ScanlineOpacity="0.05" ScanlineSpacing="3" />
+
     </Grid>
 </ContentPage>

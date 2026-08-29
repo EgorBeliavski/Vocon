@@ -1,83 +1,179 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Vocon.Pages.SettingsPage">
+             xmlns:controls="clr-namespace:Vocon.Controls;assembly=Vocon"
+             x:Class="Vocon.Pages.SettingsPage"
+             Shell.NavBarIsVisible="False">
 
-    <ScrollView>
-        <Grid Padding="20"
-              RowSpacing="16"
-              ColumnSpacing="12"
-              ColumnDefinitions="140,*"
-              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Core Palette -->
+            <Color x:Key="BgTop">#0D0D10</Color>
+            <Color x:Key="BgBottom">#08080A</Color>
+            <Color x:Key="TextLight">#DEE0E6</Color>
+            <Color x:Key="TextMuted">#646272</Color>
+            <Color x:Key="AccentTeal">#2FB8A0</Color>
+            <Color x:Key="AccentRed">#FF3355</Color>
 
-            <!-- Язык заметок -->
-            <Label Grid.Row="0" Grid.Column="0"
-                   Text="Tags language"
-                   VerticalOptions="Center" />
-            <Picker Grid.Row="0" Grid.Column="1"
-                    ItemsSource="{Binding NoteLanguages}"
-                    SelectedItem="{Binding SelectedNoteLanguage}"
-                    ItemDisplayBinding="{Binding DisplayName}"
-                    Title="Pick language" />
+            <!-- ASCII Divider -->
+            <x:String x:Key="AsciiDivider">▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓░░░░░▓</x:String>
 
-            <!-- Микрофон -->
-            <Label Grid.Row="1" Grid.Column="0"
-                   Text="Micro"
-                   VerticalOptions="Center" />
-            <Grid Grid.Row="1" Grid.Column="1"
-                  ColumnDefinitions="*,Auto"
-                  ColumnSpacing="8">
-                <Picker Grid.Column="0"
-                    ItemsSource="{Binding AvailableMicrophones}"
-                    SelectedItem="{Binding SelectedMicrophone}"
-                    ItemDisplayBinding="{Binding DisplayName}"
-                    Title="Puck input device" />
+            <Style x:Key="AsciiDividerStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="Courier New" />
+                <Setter Property="FontSize" Value="10" />
+                <Setter Property="TextColor" Value="#222329" />
+                <Setter Property="LineBreakMode" Value="NoWrap" />
+                <Setter Property="Margin" Value="0,4,0,4" />
+            </Style>
 
-                <Button Grid.Column="1"
-                    Text="⟳"
-                    Command="{Binding RefreshMicrophonesCommand}"
-                    WidthRequest="30"
-                    HeightRequest="30"
-                    Padding="0" />
-            </Grid>
+            <!-- Icon Button (Refresh, etc.) -->
+            <Style x:Key="IconButtonStyle" TargetType="Button">
+                <Setter Property="FontFamily" Value="Courier New" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="WidthRequest" Value="30" />
+                <Setter Property="HeightRequest" Value="30" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="CornerRadius" Value="15" />
+            </Style>
 
-            <!-- Hotkey -->
-            <Label Grid.Row="2" Grid.Column="0"
-                   Text="Hotkey"
-                   VerticalOptions="Center" />
-            <Grid Grid.Row="2" Grid.Column="1"
-                  ColumnDefinitions="*,Auto"
-                  ColumnSpacing="8">
-                <Entry Grid.Column="0"
-                       Text="{Binding HotkeyDisplay}"
-                       IsReadOnly="True"
-                       Placeholder="Alt + Space" />
-                <Button Grid.Column="1"
-                        Text="Change"
-                        Command="{Binding StartHotkeyCaptureCommand}" />
-            </Grid>
+            <!-- Setting Label -->
+            <Style x:Key="SettingLabelStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="Courier New" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="TextColor" Value="{StaticResource TextMuted}" />
+                <Setter Property="VerticalOptions" Value="Center" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-            <!-- Постоянная подсказка про ограничения комбинаций -->
-            <Label Grid.Row="3" Grid.Column="1"
-                   Text="{Binding HotkeyHint}"
-                   TextColor="Gray"
-                   FontSize="12" />
+    <Grid>
+        <!-- Background Gradient -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="{StaticResource BgTop}" Offset="0.0" />
+                <GradientStop Color="{StaticResource BgBottom}" Offset="1.0" />
+            </LinearGradientBrush>
+        </Grid.Background>
 
-            <!-- Предупреждение о конфликте hotkey -->
-            <Label Grid.Row="4" Grid.Column="1"
-                   Text="{Binding HotkeyConflictWarning}"
-                   TextColor="Red"
-                   FontSize="12"
-                   IsVisible="{Binding HasHotkeyConflict}" />
+        <ScrollView>
+            <VerticalStackLayout Padding="24,14,24,40" Spacing="24">
 
-            <!-- Автозапуск -->
-            <Label Grid.Row="5" Grid.Column="0"
-                   Text="Auto-launch Windows"
-                   VerticalOptions="Center" />
-            <Switch Grid.Row="5" Grid.Column="1"
-                    IsToggled="{Binding LaunchOnStartup}"
-                    HorizontalOptions="Start" />
+                <!-- HEADER -->
+                <VerticalStackLayout Spacing="8">
+                    <Grid HorizontalOptions="Start">
+                        <Label Text="SETTINGS" FontFamily="Courier New" FontSize="28" FontAttributes="Bold"
+                               TextColor="{StaticResource AccentTeal}" Opacity="0.3" TranslationX="-1" />
+                        <Label Text="SETTINGS" FontFamily="Courier New" FontSize="28" FontAttributes="Bold"
+                               TextColor="{StaticResource AccentRed}" Opacity="0.3" TranslationX="1" />
+                        <Label Text="SETTINGS" FontFamily="Courier New" FontSize="28" FontAttributes="Bold"
+                               TextColor="{StaticResource TextLight}" />
+                    </Grid>
+                    <Label Text="{StaticResource AsciiDivider}" Style="{StaticResource AsciiDividerStyle}" Margin="0,8,0,0" />
+                </VerticalStackLayout>
 
-        </Grid>
-    </ScrollView>
+                <!-- Note language -->
+                <Grid ColumnDefinitions="140,*" ColumnSpacing="16">
+                    <Label Grid.Column="0" Text="Note language" Style="{StaticResource SettingLabelStyle}" />
+                    <Picker Grid.Column="1"
+                            ItemsSource="{Binding NoteLanguages}"
+                            SelectedItem="{Binding SelectedNoteLanguage}"
+                            ItemDisplayBinding="{Binding DisplayName}"
+                            Title="Pick language"
+                            FontFamily="Courier New"
+                            FontSize="14"
+                            TextColor="{StaticResource TextLight}"
+                            BackgroundColor="Transparent" />
+                </Grid>
+
+                <!-- Microphone -->
+                <Grid ColumnDefinitions="140,*" ColumnSpacing="16">
+                    <Label Grid.Column="0" Text="Microphone" Style="{StaticResource SettingLabelStyle}" />
+                    <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <Picker Grid.Column="0"
+                                ItemsSource="{Binding AvailableMicrophones}"
+                                SelectedItem="{Binding SelectedMicrophone}"
+                                ItemDisplayBinding="{Binding DisplayName}"
+                                Title="Pick input device"
+                                FontFamily="Courier New"
+                                FontSize="14"
+                                TextColor="{StaticResource TextLight}"
+                                BackgroundColor="Transparent" />
+                        <Button Grid.Column="1"
+                                Text="⟳"
+                                Style="{StaticResource IconButtonStyle}"
+                                TextColor="{StaticResource AccentTeal}"
+                                Command="{Binding RefreshMicrophonesCommand}" />
+                    </Grid>
+                </Grid>
+
+                <!-- Hotkey -->
+                <Grid ColumnDefinitions="140,*" ColumnSpacing="16">
+                    <Label Grid.Column="0" Text="Hotkey" Style="{StaticResource SettingLabelStyle}" />
+                    <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <Entry Grid.Column="0"
+                               Text="{Binding HotkeyDisplay}"
+                               IsReadOnly="True"
+                               Placeholder="Alt + Space"
+                               FontFamily="Courier New"
+                               FontSize="14"
+                               TextColor="{StaticResource TextLight}"
+                               PlaceholderColor="{StaticResource TextMuted}"
+                               BackgroundColor="Transparent" />
+                        <Button Grid.Column="1"
+                                Text="SET"
+                                FontFamily="Courier New"
+                                FontSize="12"
+                                TextColor="{StaticResource TextLight}"
+                                BackgroundColor="#0A0A0C"
+                                BorderColor="#3A3A3E"
+                                BorderWidth="1"
+                                CornerRadius="4"
+                                Padding="12,0"
+                                Command="{Binding StartHotkeyCaptureCommand}" />
+                    </Grid>
+                </Grid>
+
+                <!-- Persistent hint about key combination limitations -->
+                <Label Text="{Binding HotkeyHint}"
+                       FontFamily="Courier New"
+                       FontSize="11"
+                       TextColor="{StaticResource TextMuted}"
+                       Margin="156,0,0,0" />
+
+                <!-- Hotkey conflict warning -->
+                <Label Text="{Binding HotkeyConflictWarning}"
+                       FontFamily="Courier New"
+                       FontSize="11"
+                       TextColor="{StaticResource AccentRed}"
+                       IsVisible="{Binding HasHotkeyConflict}"
+                       Margin="156,0,0,0" />
+
+                <!-- Auto-launch -->
+                <Grid ColumnDefinitions="140,*" ColumnSpacing="16">
+                    <Label Grid.Column="0" Text="Auto-launch (Windows)" Style="{StaticResource SettingLabelStyle}" />
+                    <Switch Grid.Column="1"
+                            IsToggled="{Binding LaunchOnStartup}"
+                            HorizontalOptions="Start"
+                            OnColor="{StaticResource AccentTeal}"
+                            ThumbColor="{StaticResource TextLight}" />
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Vignette Overlay -->
+        <BoxView InputTransparent="True">
+            <BoxView.Background>
+                <RadialGradientBrush Center="0.5,0.35" Radius="0.75">
+                    <GradientStop Color="Transparent" Offset="0.45" />
+                    <GradientStop Color="#60000000" Offset="1.0" />
+                </RadialGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+
+        <!-- Retro CRT Overlay -->
+        <controls:RetroOverlayView NoiseOpacity="0.02" ScanlineOpacity="0.05" ScanlineSpacing="3" />
+
+    </Grid>
 </ContentPage>

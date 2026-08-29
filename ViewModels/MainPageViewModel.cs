@@ -52,17 +52,28 @@ namespace Vocon.ViewModels
             _microphoneSettingsService = microphoneSettingsService;
             _hotkeyService.ChangeState += (newstate) =>
             {
-                Task.Run(() => MainThread.BeginInvokeOnMainThread(() => _ = ToggleRecording()));
+                MainThread.BeginInvokeOnMainThread(() => _ = ToggleRecording());
             };
         }
+
+        bool _isToggling;
 
         [RelayCommand]
         private async Task ToggleRecording()
         {
-            if (!isRecording)
-                await StartRecording();
-            else
-                await StopRecording();
+            if (_isToggling) return;
+            _isToggling = true;
+            try
+            {
+                if (!isRecording)
+                    await StartRecording();
+                else
+                    await StopRecording();
+            }
+            finally
+            {
+                _isToggling = false;
+            }
         }
 
         private async Task StartRecording()
@@ -138,18 +149,21 @@ namespace Vocon.ViewModels
                 };
 
                 note.Id = await _noteRepository.SaveNoteAsync(note);
-                Notes.Add(note);
+                MainThread.BeginInvokeOnMainThread(() => Notes.Add(note));
             }
         }
 
         public async Task LoadNotesAsync()
         {
             var notes = await _noteRepository.GetAllNotesAsync();
-            Notes.Clear();
-            foreach (var note in notes)
+            MainThread.BeginInvokeOnMainThread(() =>
             {
-                Notes.Add(note);
-            }
+                Notes.Clear();
+                foreach (var note in notes)
+                {
+                    Notes.Add(note);
+                }
+            });
         }
 
         [RelayCommand]
@@ -158,7 +172,7 @@ namespace Vocon.ViewModels
             if (note == null) return;
 
             await _noteRepository.DeleteNoteAsync(note);
-            Notes.Remove(note);
+            MainThread.BeginInvokeOnMainThread(() => Notes.Remove(note));
         }
 
         [RelayCommand]
@@ -179,5 +193,7 @@ namespace Vocon.ViewModels
                 }
             }
         }
+
+
     }
 }

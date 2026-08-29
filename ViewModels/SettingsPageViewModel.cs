@@ -44,7 +44,7 @@ namespace Vocon.ViewModels
         private readonly IHotKeyRecorderService _hotKeyRecorderService;
         private readonly IMicrophoneSettingsService _microphoneSettingsService;
 
-        private bool _isInitializingMicrophone; // чтобы не писать в Preferences во время первичной загрузки списка
+        private bool _isInitializingMicrophone; 
 
         public SettingsPageViewModel(
             ISettingLanguageService settingsService,
