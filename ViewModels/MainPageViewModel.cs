@@ -52,7 +52,7 @@ namespace Vocon.ViewModels
             _microphoneSettingsService = microphoneSettingsService;
             _hotkeyService.ChangeState += (newstate) =>
             {
-                MainThread.BeginInvokeOnMainThread(() => _ = ToggleRecording());
+                Task.Run(() => MainThread.BeginInvokeOnMainThread(() => _ = ToggleRecording()));
             };
         }
 

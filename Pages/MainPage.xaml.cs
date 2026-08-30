@@ -25,6 +25,7 @@ namespace Vocon
                 await viewModel.LoadNotesAsync();
             };
 
+
 #if WINDOWS
             _chrome = IPlatformApplication.Current?.Services.GetService<WindowChromeService>();
 #endif

@@ -56,7 +56,7 @@ namespace Vocon
                             presenter.SetBorderAndTitleBar(hasBorder: false, hasTitleBar: false);
                         }
 
-                        BorderlessWindowHelper.RemoveHairlineBorder(hwnd);
+                        //BorderlessWindowHelper.RemoveHairlineBorder(hwnd);
 
                         var chrome = IPlatformApplication.Current!.Services
                             .GetRequiredService<WindowChromeService>();
