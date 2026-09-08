@@ -1,7 +1,4 @@
-﻿using Microsoft.UI;
-using Microsoft.UI.Windowing;
-using System.Runtime.InteropServices;
-using WinRT.Interop;
+﻿
 
 namespace Vocon.Platforms.Windows;
 

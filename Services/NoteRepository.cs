@@ -1,10 +1,4 @@
-﻿using Microsoft.Maui.Storage;
-using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using Vocon.Models;
+﻿
 
 namespace Vocon.Services
 {

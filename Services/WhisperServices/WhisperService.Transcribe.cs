@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Vocon.ViewModels;
-using Whisper.net;
+﻿
 
 namespace Vocon.Services.WhisperService
 {
@@ -15,7 +11,7 @@ namespace Vocon.Services.WhisperService
             var language = _settingsService.SelectedLanguageCode;
 
             
-            if (!File.Exists(audiofile))
+            if (!System.IO.File.Exists(audiofile))
             {
                 throw new Exception("File not exist");
             }
@@ -24,7 +20,7 @@ namespace Vocon.Services.WhisperService
                 .WithLanguage(language)
                 .Build();
             var resultstring = new StringBuilder();
-            using var fileStream = File.OpenRead(audiofile);
+            using var fileStream = System.IO.File.OpenRead(audiofile);
             await foreach (var frame in processor.ProcessAsync(fileStream))
             {
 

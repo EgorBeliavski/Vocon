@@ -1,9 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using Windows.Devices.Enumeration;
-using Windows.Media;
-using Windows.Media.Control;
+﻿
 
 
 

@@ -1,5 +1,4 @@
 ﻿
-using Windows.Devices.Enumeration;
 
 namespace Vocon.Services.MicroDeviceService
 {

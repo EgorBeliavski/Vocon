@@ -1,25 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Maui.Hosting;
-using Microsoft.Maui.LifecycleEvents;
-using Plugin.Maui.Audio;
-using Vocon.Pages;
-using Vocon.Services;
-using Vocon.Services.AutoStartService;
-using Vocon.Services.BrowserNavigationService;
-using Vocon.Services.CommandService;
-using Vocon.Services.EmbeddingServices;
-using Vocon.Services.HotKeyService;
-using Vocon.Services.MicroDeviceService;
-using Vocon.Services.SettingLanguageService;
-using Vocon.Services.WhisperService;
-using Vocon.TagSercices;
-using Vocon.ViewModels;
-using Microsoft.UI;
-using Vocon.Platforms.Windows;
+﻿
+
+
+
 
 #if WINDOWS
-using Microsoft.UI.Windowing;
-using WinRT.Interop;
+
 #endif
 
 namespace Vocon
@@ -56,7 +41,8 @@ namespace Vocon
                             presenter.SetBorderAndTitleBar(hasBorder: false, hasTitleBar: false);
                         }
 
-                        //BorderlessWindowHelper.RemoveHairlineBorder(hwnd);
+                        if (appWindow.Title == "VoconOverlay")
+                            return;
 
                         var chrome = IPlatformApplication.Current!.Services
                             .GetRequiredService<WindowChromeService>();
@@ -80,6 +66,7 @@ namespace Vocon
             builder.Services.AddSingleton<INoteRepository, NoteRepository>();
             builder.Services.AddSingleton<IMicrophoneSettingsService, MicrophoneSettingsService>();
             builder.Services.AddSingleton<IBrowserNavigationService, BrowserNavigationService>();
+            builder.Services.AddSingleton<IOverlayWindowService, OverlayWindowService>();
 
             builder.Services.AddSingleton<MicroDeviceService>();
             builder.Logging.AddDebug();

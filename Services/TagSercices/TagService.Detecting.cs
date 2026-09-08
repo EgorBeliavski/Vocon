@@ -1,7 +1,4 @@
-﻿using Vocon.Services.EmbeddingServices;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
 
 namespace Vocon.TagSercices
 {

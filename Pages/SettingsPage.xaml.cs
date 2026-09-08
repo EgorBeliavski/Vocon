@@ -1,6 +1,3 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using Plugin.Maui.Audio;
-using Vocon.ViewModels;
 
 
 namespace Vocon.Pages;

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Vocon.Services.EmbeddingServices;
+﻿
 
 namespace Vocon.Services.CommandService
 {

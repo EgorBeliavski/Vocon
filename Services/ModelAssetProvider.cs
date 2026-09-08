@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.Maui.Storage;
-
+﻿
 namespace Vocon.Services
 {
     public class ModelAssetProvider
@@ -14,10 +8,10 @@ namespace Vocon.Services
 
         private async Task<string> EnsureFileExistsInCacheAsync(string assetFileName){
             string targetPath = Path.Combine(FileSystem.CacheDirectory, assetFileName);
-            if (File.Exists(targetPath)) return targetPath;
+            if (System.IO.File.Exists(targetPath)) return targetPath;
 
             using Stream sourceStream = await FileSystem.OpenAppPackageFileAsync(assetFileName);
-            using Stream destinationStream = File.Create(targetPath);
+            using Stream destinationStream = System.IO.File.Create(targetPath);
 
             await sourceStream.CopyToAsync(destinationStream);
 

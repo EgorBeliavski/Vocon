@@ -1,6 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using SQLite;
-using System;
+﻿
+
 
 namespace Vocon.Models
 {

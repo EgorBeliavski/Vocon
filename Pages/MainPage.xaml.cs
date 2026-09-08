@@ -1,10 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Plugin.Maui.Audio;
-using System.Diagnostics;
-using Vocon.Services.EmbeddingServices;
-using Vocon.ViewModels;
-using Vocon.Platforms.Windows;
-using Whisper.net;
+﻿
 
 namespace Vocon
 {

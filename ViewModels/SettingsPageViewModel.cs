@@ -1,14 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using Vocon.Services.AutoStartService;
-using Vocon.Services.HotKeyService;
-using Vocon.Services.MicroDeviceService;
-using Vocon.Services.SettingLanguageService;
-
+﻿
 namespace Vocon.ViewModels
 {
     public class LanguageOption

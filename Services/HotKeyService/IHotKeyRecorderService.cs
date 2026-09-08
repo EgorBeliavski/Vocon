@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
+﻿
 namespace Vocon.Services.HotKeyService
 {
     public interface IHotKeyRecorderService

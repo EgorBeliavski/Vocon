@@ -1,6 +1,4 @@
-﻿using IWshRuntimeLibrary;
-using System.Diagnostics;
-using System.IO;
+﻿
 
 namespace Vocon.Services.AutoStartService
 {

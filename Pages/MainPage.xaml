@@ -144,25 +144,53 @@
             </CollectionView>
 
             <!-- RECORD DOCK -->
+            <!-- RECORD DOCK -->
             <VerticalStackLayout Grid.Row="3" Padding="20,0,20,26" Spacing="16">
 
                 <Label Text="{StaticResource AsciiDivider}" Style="{StaticResource AsciiDividerStyle}" Margin="0" />
 
+                
+
+                <!-- SAVE CONFIRMATION -->
+                <Label Text="✓ note saved"
+           HorizontalOptions="Center"
+           FontFamily="Courier New" FontSize="11" FontAttributes="Bold"
+           TextColor="{StaticResource AccentTeal}"
+           IsVisible="{Binding SaveConfirmationVisible}" />
+
                 <Grid HorizontalOptions="Center" WidthRequest="86" HeightRequest="86">
-                    <Ellipse Fill="{StaticResource AccentTeal}" Opacity="0.35"
-                             WidthRequest="80" HeightRequest="80" TranslationX="-8" InputTransparent="True" />
-                    <Ellipse Fill="{StaticResource AccentRed}" Opacity="0.35"
-                             WidthRequest="80" HeightRequest="80" TranslationX="8" InputTransparent="True" />
+                    <Ellipse Fill="{StaticResource AccentTeal}"
+                 WidthRequest="80" HeightRequest="80" TranslationX="-8" InputTransparent="True">
+                        <Ellipse.Triggers>
+                            <DataTrigger TargetType="Ellipse" Binding="{Binding IsRecording}" Value="True">
+                                <Setter Property="Opacity" Value="0.7" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Ellipse" Binding="{Binding IsRecording}" Value="False">
+                                <Setter Property="Opacity" Value="0.35" />
+                            </DataTrigger>
+                        </Ellipse.Triggers>
+                    </Ellipse>
+                    <Ellipse Fill="{StaticResource AccentRed}"
+                 WidthRequest="80" HeightRequest="80" TranslationX="8" InputTransparent="True">
+                        <Ellipse.Triggers>
+                            <DataTrigger TargetType="Ellipse" Binding="{Binding IsProcessing}" Value="True">
+                                <Setter Property="Opacity" Value="0.7" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Ellipse" Binding="{Binding IsProcessing}" Value="False">
+                                <Setter Property="Opacity" Value="0.35" />
+                            </DataTrigger>
+                        </Ellipse.Triggers>
+                    </Ellipse>
 
                     <Button Text="{Binding RecordButtonText}"
-                            Command="{Binding ToggleRecordingCommand}"
-                            FontFamily="Courier New" FontSize="12" TextColor="{StaticResource TextLight}"
-                            BackgroundColor="#0A0A0C" BorderColor="#3A3A3E" BorderWidth="1"
-                            CornerRadius="37" WidthRequest="74" HeightRequest="74" Padding="4" />
+                Command="{Binding ToggleRecordingCommand}"
+                FontFamily="Courier New" FontSize="12" TextColor="{StaticResource TextLight}"
+                BackgroundColor="#0A0A0C" BorderColor="#3A3A3E" BorderWidth="1"
+                CornerRadius="37" WidthRequest="74" HeightRequest="74" Padding="4" />
                 </Grid>
 
                 <Label Text="hold to record · Ctrl+Alt+Space" HorizontalOptions="Center"
-                       FontFamily="Courier New" FontSize="11" TextColor="{StaticResource TextMuted}" />
+           FontFamily="Courier New" FontSize="11" TextColor="{StaticResource TextMuted}" />
             </VerticalStackLayout>
 
         </Grid>

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Vocon.Services.SettingLanguageService;
-using Whisper.net;
+﻿
 
 namespace Vocon.Services.WhisperService
 {
@@ -18,7 +14,7 @@ namespace Vocon.Services.WhisperService
         }
        
         private WhisperFactory GetModel(){
-            if (!File.Exists(_factorypath))
+            if (!System.IO.File.Exists(_factorypath))
                 throw new FileNotFoundException($"Model not found at: {_factorypath}");
             _factory ??= WhisperFactory.FromPath(_factorypath); return _factory;
         }

@@ -1,16 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Plugin.Maui.Audio;
-using System.Collections.ObjectModel;
-using Vocon.Models;
-using Vocon.Services;
-using Vocon.Services.CommandService;
-using Vocon.Services.EmbeddingServices;
-using Vocon.Services.HotKeyService;
-using Vocon.Services.MicroDeviceService;
-using Vocon.Services.WhisperService;
-using Vocon.Services.BrowserNavigationService;
-using Vocon.TagSercices;
+﻿
 
 namespace Vocon.ViewModels
 {
@@ -26,10 +14,21 @@ namespace Vocon.ViewModels
         private readonly IMediaControlService _mediaControlService;
         private readonly IBrowserNavigationService _browserNavigationService; 
         private readonly IMicrophoneSettingsService _microphoneSettingsService;
+        private readonly IOverlayWindowService _overlayWindowService;
+
         public ObservableCollection<Note> Notes { get; } = new();
 
         [ObservableProperty]
         private bool isRecording;
+
+        [ObservableProperty]
+        private bool isProcessing;
+
+        [ObservableProperty]
+        private string statusText = "IDLE";
+
+        [ObservableProperty]
+        private bool saveConfirmationVisible;
 
         [ObservableProperty]
         private string recordButtonText = "Record";
@@ -39,7 +38,8 @@ namespace Vocon.ViewModels
                           EmbeddingService embeddingService, TagService tagService, IHotKeyService hotkeyService,
                           CommandService commandService, IMediaControlService mediaControlService,
                           IBrowserNavigationService browserNavigationService, 
-                          INoteRepository noteRepository, IMicrophoneSettingsService microphoneSettingsService)
+                          INoteRepository noteRepository, IMicrophoneSettingsService microphoneSettingsService,
+                          IOverlayWindowService overlayWindowService)
         {
             _hotkeyService = hotkeyService;
             _audioManager = audioManager;
@@ -50,6 +50,7 @@ namespace Vocon.ViewModels
             _browserNavigationService = browserNavigationService; 
             _noteRepository = noteRepository;
             _microphoneSettingsService = microphoneSettingsService;
+            _overlayWindowService = overlayWindowService;
             _hotkeyService.ChangeState += (newstate) =>
             {
                 Task.Run(() => MainThread.BeginInvokeOnMainThread(() => _ = ToggleRecording()));
@@ -88,6 +89,8 @@ namespace Vocon.ViewModels
             });
 
             isRecording = true;
+            _overlayWindowService.Show();
+            _overlayWindowService.UpdateState(isRecording: true, isProcessing: false);
             RecordButtonText = "Stop";
         }
 
@@ -95,62 +98,79 @@ namespace Vocon.ViewModels
         {
             var audioSource = await _recorder.StopAsync();
             isRecording = false;
+            IsProcessing = true;
             RecordButtonText = "Record";
 
-            var modelsDir = Path.Combine(FileSystem.AppDataDirectory, "Models");
-            Directory.CreateDirectory(modelsDir);
-
-            var fileName = $"recording_{DateTime.UtcNow:yyyyMMdd_HHmmss}.wav";
-            _currentFilePath = Path.Combine(modelsDir, fileName);
-
-            using (var sourceStream = audioSource.GetAudioStream())
-            using (var fileStream = File.Create(_currentFilePath))
+            try
             {
-                await sourceStream.CopyToAsync(fileStream);
-            }
+                var modelsDir = Path.Combine(FileSystem.AppDataDirectory, "Models");
+                Directory.CreateDirectory(modelsDir);
 
-            var resultText = await _service.TranscribeModel(_currentFilePath);
+                var fileName = $"recording_{DateTime.UtcNow:yyyyMMdd_HHmmss}.wav";
+                _currentFilePath = Path.Combine(modelsDir, fileName);
 
-            
-            var opened = await _browserNavigationService.TryNavigateAsync(resultText);
-            if (opened)
-                return;
-
-            var command = _commandService.GetBestTag(resultText);
-
-            if (command != null)
-            {
-                switch (command)
+                using (var sourceStream = audioSource.GetAudioStream())
+                using (var fileStream = System.IO.File.Create(_currentFilePath))
                 {
-                    case MediaCommand.NextTrack:
-                        await _mediaControlService.NextTrack(); break;
+                    await sourceStream.CopyToAsync(fileStream);
+                }
 
-                    case MediaCommand.PreviousTrack:
-                        await _mediaControlService.PreviousTrack(); break;
+                var resultText = await _service.TranscribeModel(_currentFilePath);
 
-                    case MediaCommand.Play:
-                        await _mediaControlService.SetPlayState(true); break;
+                var opened = await _browserNavigationService.TryNavigateAsync(resultText);
+                if (opened)
+                    return;
 
-                    case MediaCommand.Pause:
-                        await _mediaControlService.SetPlayState(false); break;
-                    case MediaCommand.Repeat:
-                        await _mediaControlService.Repeat(); break;
+                var command = _commandService.GetBestTag(resultText);
+
+                if (command != null)
+                {
+                    switch (command)
+                    {
+                        case MediaCommand.NextTrack:
+                            await _mediaControlService.NextTrack(); break;
+
+                        case MediaCommand.PreviousTrack:
+                            await _mediaControlService.PreviousTrack(); break;
+
+                        case MediaCommand.Play:
+                            await _mediaControlService.SetPlayState(true); break;
+
+                        case MediaCommand.Pause:
+                            await _mediaControlService.SetPlayState(false); break;
+                        case MediaCommand.Repeat:
+                            await _mediaControlService.Repeat(); break;
+                    }
+                }
+                else
+                {
+                    var note = new Note
+                    {
+                        Title = $"{DateTime.Now:dd.MM.yyyy HH:mm}",
+                        Transcription = resultText,
+                        Date = DateTime.Now,
+                        AudioFilePath = _currentFilePath,
+                        Tag = _tagService.GetBestTag(resultText)
+                    };
+
+                    note.Id = await _noteRepository.SaveNoteAsync(note);
+                    MainThread.BeginInvokeOnMainThread(() => Notes.Add(note));
+
+                    _ = ShowSaveConfirmation();
                 }
             }
-            else
+            finally
             {
-                var note = new Note
-                {
-                    Title = $"{DateTime.Now:dd.MM.yyyy HH:mm}",
-                    Transcription = resultText,
-                    Date = DateTime.Now,
-                    AudioFilePath = _currentFilePath,
-                    Tag = _tagService.GetBestTag(resultText)
-                };
-
-                note.Id = await _noteRepository.SaveNoteAsync(note);
-                MainThread.BeginInvokeOnMainThread(() => Notes.Add(note));
+                IsProcessing = false;
+                _overlayWindowService.Hide();
             }
+        }
+
+        private async Task ShowSaveConfirmation()
+        {
+            SaveConfirmationVisible = true;
+            await Task.Delay(1800);
+            SaveConfirmationVisible = false;
         }
 
         public async Task LoadNotesAsync()

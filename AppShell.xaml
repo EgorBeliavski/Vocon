@@ -14,4 +14,5 @@
     <FlyoutItem Title="Settings">
         <ShellContent x:Name="SettingsShellContent" />
     </FlyoutItem>
+    
 </Shell>

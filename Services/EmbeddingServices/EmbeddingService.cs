@@ -1,12 +1,4 @@
-﻿using BlingFire;
-using Microsoft.ML.OnnxRuntime;
-using Microsoft.ML.OnnxRuntime.Tensors;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
 
 
@@ -34,7 +26,7 @@ namespace Vocon.Services.EmbeddingServices
             _isInitialize = true;
         }
         private int[] Tokenize(string text){
-            byte[] inputbytes = Encoding.UTF8.GetBytes(text);
+            byte[] inputbytes = System.Text.Encoding.UTF8.GetBytes(text);
             int[] _rawIds = new int[128];
 
             int producedCount = BlingFireUtils.TextToIds(_handle,inputbytes,inputbytes.Length,_rawIds,_rawIds.Length,0);

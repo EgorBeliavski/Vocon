@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
+             x:Class="Vocon.Pages.OverlayPage"
+             BackgroundColor="Transparent">
+
+    <shapes:Ellipse x:Name="Indicator"
+                Fill="#FF3B30"
+                StrokeThickness="0"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill">
+        <shapes:Ellipse.Triggers>
+            <DataTrigger TargetType="shapes:Ellipse"
+                     Binding="{Binding IsProcessing}"
+                     Value="True">
+                <Setter Property="Fill" Value="#2FB8A0" />
+            </DataTrigger>
+            <DataTrigger TargetType="shapes:Ellipse"
+                     Binding="{Binding IsRecording}"
+                     Value="True">
+                <Setter Property="Fill" Value="#FF3B30" />
+            </DataTrigger>
+        </shapes:Ellipse.Triggers>
+    </shapes:Ellipse>
+
+</ContentPage>
