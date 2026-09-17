@@ -1,9 +1,4 @@
-﻿
-
-
-
-
-#if WINDOWS
+﻿#if WINDOWS
 
 #endif
 

@@ -70,7 +70,6 @@ namespace Vocon.ViewModels
         private async Task LoadMicrophonesAsync(Task<IReadOnlyList<Windows.Devices.Enumeration.DeviceInformation>> fetch)
         {
             var devices = await fetch;
-            System.Diagnostics.Debug.WriteLine($"Found {devices.Count} microphones");
 
             var savedId = _microphoneSettingsService.Load();
             var previousId = SelectedMicrophone?.Id ?? savedId;
@@ -131,7 +130,7 @@ namespace Vocon.ViewModels
         [ObservableProperty]
         private bool isRecordingHotkey;
 
-        public string HotkeyHint => "Some combinations (e.g. Alt+Tab, Win+L, Ctrl+Alt+Delete) are reserved by Windows and can't be used";
+        public string HotkeyHint => "Some combinations are reserved by Windows and can't be used";
 
         [RelayCommand]
         private void StartHotkeyCapture()

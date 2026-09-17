@@ -22,7 +22,6 @@ namespace Vocon.Services.EmbeddingServices
                 throw new Exception("NullReferenceException");
             }
 
-            Debug.WriteLine($"CacheDirectory: {FileSystem.CacheDirectory}");
             _isInitialize = true;
         }
         private int[] Tokenize(string text){

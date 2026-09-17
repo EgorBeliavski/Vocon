@@ -46,7 +46,7 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\vocon_icon.png" ForegroundFile="Resources\AppIcon\vocon_icon.png" Color="Transparent"/>
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
@@ -94,5 +94,10 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
-	
+	<Target Name="RemoveDuplicateBlingFireModel" BeforeTargets="AssignTargetPaths;_HandleFileConflictsForPublish;GetCopyToOutputDirectoryItems">
+		<ItemGroup>
+			<Content Remove="@(Content)" Condition="$([System.String]::Copy('%(Content.FullPath)').Contains('blingfirenuget'))" />
+		</ItemGroup>
+	</Target>
+
 </Project>
