@@ -52,6 +52,7 @@ namespace Vocon
             builder.Services.AddSingleton<TagService>();
             builder.Services.AddSingleton<CommandService>();
             builder.Services.AddSingleton<WindowChromeService>();
+            builder.Services.AddSingleton<MicroDeviceService>();
 
             builder.Services.AddSingleton<ISettingLanguageService, SettingLanguageService>();
             builder.Services.AddSingleton<IMediaControlService, MediaControlService>();

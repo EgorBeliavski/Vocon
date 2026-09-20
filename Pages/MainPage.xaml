@@ -45,7 +45,22 @@
         </Grid.Background>
 
         <Grid RowDefinitions="Auto,Auto,*,Auto">
-
+            <Border IsVisible="{Binding MicrophoneWarningVisible}"
+                BackgroundColor="#1A0000"
+                Stroke="{StaticResource AccentRed}"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 6"
+                Padding="14,8"
+                HorizontalOptions="Center"
+                VerticalOptions="Start"
+                Margin="0,20,0,0"
+                Opacity="0.9">
+                        <Label Text="MICRO DEVICE IS DISTORTED"
+                   TextColor="{StaticResource AccentRed}"
+                   FontFamily="Courier New"
+                   FontSize="12"
+                   HorizontalOptions="Center" />
+            </Border>
             <!-- TITLE BAR -->
             <Grid Grid.Row="0" ColumnDefinitions="*,Auto" HeightRequest="34">
 

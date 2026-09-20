@@ -15,6 +15,7 @@ namespace Vocon.ViewModels
         private readonly IBrowserNavigationService _browserNavigationService; 
         private readonly IMicrophoneSettingsService _microphoneSettingsService;
         private readonly IOverlayWindowService _overlayWindowService;
+        private readonly MicroDeviceService _microDeviceService;
 
         public ObservableCollection<Note> Notes { get; } = new();
 
@@ -32,6 +33,9 @@ namespace Vocon.ViewModels
 
         [ObservableProperty]
         private string recordButtonText = "Record";
+
+        [ObservableProperty]
+        private bool microphoneWarningVisible;
         private readonly INoteRepository _noteRepository;
 
         public MainPageViewModel(IAudioManager audioManager, WhisperService service,
@@ -39,7 +43,7 @@ namespace Vocon.ViewModels
                           CommandService commandService, IMediaControlService mediaControlService,
                           IBrowserNavigationService browserNavigationService, 
                           INoteRepository noteRepository, IMicrophoneSettingsService microphoneSettingsService,
-                          IOverlayWindowService overlayWindowService)
+                          IOverlayWindowService overlayWindowService, MicroDeviceService microDeviceService)
         {
             _hotkeyService = hotkeyService;
             _audioManager = audioManager;
@@ -51,6 +55,7 @@ namespace Vocon.ViewModels
             _noteRepository = noteRepository;
             _microphoneSettingsService = microphoneSettingsService;
             _overlayWindowService = overlayWindowService;
+            _microDeviceService = microDeviceService;
             _hotkeyService.ChangeState += (newstate) =>
             {
                 Task.Run(() => MainThread.BeginInvokeOnMainThread(() => _ = ToggleRecording()));
@@ -79,14 +84,29 @@ namespace Vocon.ViewModels
 
         private async Task StartRecording()
         {
-            _recorder = _audioManager.CreateRecorder();
-
-            await _recorder.StartAsync(new AudioRecorderOptions
+            if (!await _microDeviceService.IsMicrophoneAvailableAsync())
             {
-                SampleRate = 16000,
-                Channels = ChannelType.Mono,
-                BitDepth = BitDepth.Pcm16bit
-            });
+                ShowMicrophoneWarning();
+                return;
+            }
+
+            try
+            {
+                _recorder = _audioManager.CreateRecorder();
+
+                await _recorder.StartAsync(new AudioRecorderOptions
+                {
+                    SampleRate = 16000,
+                    Channels = ChannelType.Mono,
+                    BitDepth = BitDepth.Pcm16bit
+                });
+            }
+            catch (Exception)
+            {
+                ShowMicrophoneWarning();
+                _recorder = null;
+                return;
+            }
 
             isRecording = true;
             _overlayWindowService.Show();
@@ -164,6 +184,22 @@ namespace Vocon.ViewModels
                 IsProcessing = false;
                 _overlayWindowService.Hide();
             }
+        }
+        private void ShowMicrophoneWarning()
+        {
+            StatusText = "MICROPHONE DISABLED";
+            MicrophoneWarningVisible = true;
+
+            
+            _ = HideMicrophoneWarningAfterDelay();
+        }
+
+        private async Task HideMicrophoneWarningAfterDelay()
+        {
+            await Task.Delay(2500);
+            MicrophoneWarningVisible = false;
+            if (StatusText == "MICROPHONE DISABLED")
+                StatusText = "IDLE";
         }
 
         private async Task ShowSaveConfirmation()

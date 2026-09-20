@@ -46,7 +46,7 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\vocon_icon.png" ForegroundFile="Resources\AppIcon\vocon_icon.png" Color="Transparent"/>
+		<MauiIcon Include="Resources\AppIcon\vocon_icon.png" ForegroundFile="Resources\AppIcon\vocon_icon.png" Color="Transparent" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
@@ -80,6 +80,7 @@
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.100" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.11" />
 		<PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.29.0" />
+		<PackageReference Include="NAudio" Version="3.1.0" />
 		<PackageReference Include="Plugin.Maui.Audio" Version="3.1.1" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.11.285" />
 		<PackageReference Include="Whisper.net" Version="1.9.1" />
